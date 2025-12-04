@@ -59,6 +59,9 @@ $Group ENDO
     PC[t]     "Forbrugerprisindeks"
     omv[t]    "Omvurderinger"
     Y_H[t]    "Løbende indtægter"
+
+    X(a,t)    "Eksport af biler"
+    M(a,t)    "Import af biler"
     
  ;
 
@@ -66,6 +69,14 @@ $Group ENDO
 
 
 $Group EXO 
+    X_bar(a,t)    "Markedsstørrelse"
+    M_bar(a,t)    "Markedsstørrelse"
+    PX_bar(a,t)   "Eksportpris"
+    PM_bar(a,t)   "Importpris"
+
+    EX            "Eksportelasticitet"
+    EM            "Importelasticitet"
+
     profit(t)  "Overskud"
     PZ[t]       "Pris på ikke-boligforbrug"
 
@@ -99,6 +110,8 @@ $Group EXO
     H_alt(t)    "Antal"
     Q_sum(t)    "Antal"
     PQ_sum(t)   "Pris på Q_sum"
+    M_sum(t)    "Antal"
+    X_sum(t)    "Antal"
     p_L0(t)     "Leasing-pris på ny bil"
     p_L1(t)     "Leasing-pris på ny bil"
     p_L2(t)     "Leasing-pris på ny bil"
@@ -118,6 +131,8 @@ $Group J_led
     J7(t)   "J-led"
     J8(t)   "J-led"
     J9(a,t)   "J-led"
+    J10(a,t)   "J-led"
+    J11(a,t)   "J-led"
 ;
 
 
@@ -126,12 +141,9 @@ $BLOCK Modelligninger
 
 # Husholdning
 #---------------------------
-E_Q(a,t)$(ax0(a) and tx0(t))..       Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1);
+E_Q(a,t)$(ax0(a) and tx0(t))..       Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
 
-#E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 E_P(a,t)$(tx0T(t))..                  P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
-
-#E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J1(a,t) + (1+r(t+1))*P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a); 
 
 E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
@@ -145,12 +157,14 @@ E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(
 
 E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t) + omv(t);
 
+E_X(a,t)$(tx0(t))..                  X(a,t)     =E= J10(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
+
+E_M(a,t)$(tx0(t))..                  M(a,t)     =E= J11(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
+
 # Teminalbetingelser
 #---------------------------
-#E_P_term(a,t)$(ax0(a) and tT(t))..   P(a,t)                =E= P(a,t-1);
 E_Q_term(a,t)$(tT(t))..   Q(a,t)                =E= J9(a,t) + Q(a,t-1);
 
-#E_profit_term(t)$(tT(t))..            profit(t)             =E= profit(t-1);
 
 $ENDBLOCK
 
@@ -159,12 +173,16 @@ r.l(t)        = 0.05;
 c.l(a,t)      = 0.02 + 0.001*ord(a);
 F.l           = 1.5;
 E.l           = 0.7;
+EX.l          = 5;
+EM.l          = 2.5;
 
 # "DATA"
 Y_H.l(t)   = 1;
 Z.l(t)     = 0.25;
 P.l(a,t)     = 1 - 0.98*ord(a)/card(a); 
 Q.l(a,t)     = 0.1;
+X.l(a,t)     = 0;
+M.l(a,t)     = 0;
 
 Y_H_bar.l(t)   = Y_H.l(t);
 
@@ -196,11 +214,12 @@ muH.l = sum(t1, H.l(t1)/Y_H.l(t1));
 * 7
 gamma.l(a) = sum(t1, (p_L.l(a,t1)/PH.l(t1))**(F.l)*Q.l(a,t1)/H.l(t1));
 
- 
-profit.l(t) = sum(a, (p_L.l(a,t) - c.l(a,t))*Q.l(a,t)) - P.l('0', t)*Q.l('0', t);
+* Udenrigshandel 
+PX_bar.l(a,t) = P.l(a,t);
+X_bar.l(a,t) = X.l(a,t);
 
-#Y_H_bar.l(t)   = Y_H_bar.l(t) - profit.l(t);
-
+PM_bar.l(a,t) = P.l(a,t);
+M_bar.l(a,t) = M.l(a,t);
 
 display profit.l;
 #$exit
@@ -242,12 +261,11 @@ P.fx(a, t0) = P.l(a, t0);
 # Nypris er eksogen
 p.fx('0',t) = p.l('0',t);
 
-# Omvurderinger i t1
-#omv.fx(t)$(tx1(t)) = 0;
 omv.fx(t) = 0;
 
-# NORMALISERING I t1 ???
-#p.fx('20',t1) = p.l('20',t1);
+# Her stødes eksport ind (M=X=0 i grundkalibrering)
+X_bar.fx(a,t)$(t.val>5 and a.val >0 and a.val<6) = 0.001;
+
 
 # Output macro
 $macro output_vars \
@@ -265,6 +283,8 @@ p24.l(t) = p.l('24',t); \
 p25.l(t) = p.l('25',t); \
 Q_sum.l(t) = sum(a, Q.l(a,t)); \
 PQ_sum.l(t) = sum(a, p_L.l(a,t)*Q.l(a,t)) / Q_sum.l(t); \
+M_sum.l(t) = sum(a, M.l(a,t)); \
+X_sum.l(t) = sum(a, X.l(a,t)); \
 H_alt.l(t) = (sum(a$(a.val>10), gamma.l(a)**(1/F.l)*Q.l(a,t)**((F.l-1)/F.l)))**(F.l/(F.l-1)); \
 Q0.l(t) = Q.l('0',t); \
 Q1.l(t) = Q.l('1',t); \
@@ -286,10 +306,11 @@ execute_unload 'output\model0.gdx';
 #P.fx('0', t)$(t.val>0) = 1.01*P.l('0', t);
 #Y_H_bar.fx(t)$(t.val>0) = 1.01*Y_H_bar.l(t);
 #Y_H_bar.fx(t)$(t.val>0) = 0.99*Y_H_bar.l(t);
+X_bar.fx(a,t)$(t.val>0) = 1.1*X_bar.l(a,t);
 
 
 #P.fx('0', t)$(t.val>5) = 1.01*P.l('0', t);
-Y_H_bar.fx(t)$(t.val>5) = 1.01*Y_H_bar.l(t);
+#Y_H_bar.fx(t)$(t.val>5) = 1.01*Y_H_bar.l(t);
 #c.fx(a,t)$(t.val>5) = 1.01*c.l(a,t);
 
 solve model1 using CNS;
