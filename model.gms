@@ -117,7 +117,7 @@ $Group J_led
     J6(a,t)   "J-led"
     J7(t)   "J-led"
     J8(t)   "J-led"
-    J9(t)   "J-led"
+    J9(a,t)   "J-led"
 ;
 
 
@@ -128,11 +128,10 @@ $BLOCK Modelligninger
 #---------------------------
 E_Q(a,t)$(ax0(a) and tx0(t))..       Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1);
 
-E_P(a,t)$(axA(a) and tx0T(t))..     P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*P(a,t) - (p_L(a,t+1) - c(a,t+1)) * S_tot(a);
-#E_P(a,t)$(axA(a) and tx0(t))..     P(a+1,t) =E= J1(a,t) + (1+r(t))*P(a,t-1) - (p_L(a,t) - c(a,t)) * S_tot(a);
+#E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+E_P(a,t)$(tx0T(t))..                  P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
-E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J1(a,t) + (1+r(t+1))*P(a,t) - (p_L(a,t+1) - c(a,t+1)) * S_tot(a);
-#E_PA(a,t)$(aA(a) and tx0(t))..      0          =E= J1(a,t) + (1+r(t))*P(a,t-1) - (p_L(a,t) - c(a,t)) * S_tot(a);
+#E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J1(a,t) + (1+r(t+1))*P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a); 
 
 E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
@@ -146,16 +145,10 @@ E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(
 
 E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t) + omv(t);
 
-#E_Y_omv(t)$(t1(t))..                 omv(t)     =E= J9(t) + sum(a, P(a,t-1) - (P(a+1,t) + (p_L(a,t) - c(a,t))*S_tot(a))/(1+r(t)));
-
-#E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t) + profit(t);
-#E_profit(t)$(txT(t))..               profit(t)  =E= J9(t) + sum(a, (p_L(a,t) - c(a,t))*Q(a,t)) - P('0', t)*Q('0', t+1);
-
-
-
 # Teminalbetingelser
 #---------------------------
-E_P_term(a,t)$(ax0(a) and tT(t))..    P(a,t)                =E= P(a,t-1);
+#E_P_term(a,t)$(ax0(a) and tT(t))..   P(a,t)                =E= P(a,t-1);
+E_Q_term(a,t)$(tT(t))..   Q(a,t)                =E= J9(a,t) + Q(a,t-1);
 
 #E_profit_term(t)$(tT(t))..            profit(t)             =E= profit(t-1);
 
@@ -187,8 +180,7 @@ S_tot.l(a) = prod(a2$(a2.val<=a.val), s.l(a2));
 Q.l(a,t) = S_tot.l(a)*Q.l('0',t);
 
 * 4
-p_L.l(a,t) = c.l(a,t) + ((1+r.l(t))*P.l(a,t) - P.l(a+1,t)) / S_tot.l(a);   
-*$(axA(a))
+p_L.l(a,t) = c.l(a,t) + (r.l(t)*P.l(a,t) + P.l(a,t) - P.l(a+1,t))/((1+r.l(t))*S_tot.l(a));
 
 * 5 
 PH.l(t) = 1;
@@ -255,7 +247,7 @@ p.fx('0',t) = p.l('0',t);
 omv.fx(t) = 0;
 
 # NORMALISERING I t1 ???
-p.fx('20',t1) = p.l('20',t1);
+#p.fx('20',t1) = p.l('20',t1);
 
 # Output macro
 $macro output_vars \
@@ -291,17 +283,14 @@ execute_unload 'output\model0.gdx';
 # Stød
 #-----------------------------------
 #c.fx(a,t)$(t.val>0) = 1.01*c.l(a,t);
-P.fx('0', t)$(t.val>0) = 1.01*P.l('0', t);
+#P.fx('0', t)$(t.val>0) = 1.01*P.l('0', t);
 #Y_H_bar.fx(t)$(t.val>0) = 1.01*Y_H_bar.l(t);
 #Y_H_bar.fx(t)$(t.val>0) = 0.99*Y_H_bar.l(t);
 
 
 #P.fx('0', t)$(t.val>5) = 1.01*P.l('0', t);
-#Y_H_bar.fx(t)$(t.val>5) = 1.01*Y_H_bar.l(t);
+Y_H_bar.fx(t)$(t.val>5) = 1.01*Y_H_bar.l(t);
 #c.fx(a,t)$(t.val>5) = 1.01*c.l(a,t);
-
-
-
 
 solve model1 using CNS;
 output_vars
@@ -309,11 +298,4 @@ execute_unload 'output\model.gdx';
 
 display omv.l;
 
-$exit
-
-
-
-
-
-output_vars
 
