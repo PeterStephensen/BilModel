@@ -48,12 +48,15 @@ lav_fig(df,  "p_L0", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "PH", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "Q_sum", t_min=tmin, t_max=tmax, main="Samlet antal biler, Q_sum")
 lav_fig_rel(df0, df, "PQ_sum", t_min=tmin, t_max=tmax, main="Gennemsnitlig leasing-pris, PQ_sum")
+
+lav_fig(df, "X_sum", t_min=tmin, t_max=tmax)
+
 lav_fig_rel(df0, df, "H", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "PH", t_min=tmin, t_max=tmax)
-
-
 lav_fig_rel(df0, df, "PC", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "Z", t_min=tmin, t_max=tmax, main="Ikke-transport, Z")
+
+
 lav_fig_rel(df0, df, "H", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "PH", t_min=tmin, t_max=tmax)
 lav_fig_rel(df0, df, "Y_H", t_min=tmin, t_max=tmax)
