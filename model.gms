@@ -66,34 +66,38 @@ $Group ENDO
  ;
 
 
-
-
-$Group EXO 
+$Group EXO_CALIB 
     X_bar(a,t)    "Markedsstørrelse"
     M_bar(a,t)    "Markedsstørrelse"
-    PX_bar(a,t)   "Eksportpris"
-    PM_bar(a,t)   "Importpris"
+    gamma[a,t]     "Vægt"
+    muH(t)          "Vægt"
+    muZ(t)          "Vægt"
+
+#    PH[t]     "Pris på boligforbrug"
+    H[t]          " "
+    Y_H_bar(t)   "Husholdningernes indkomst"
+    p_L[a,t]      ""
+    Q[a,t]        ""
+    J9[a,t]       ""
+
+;
+
+$Group EXO 
+    s(a)         "Overlevelsessandsynlighed"
+    S_tot(a)     "Store-S"
 
     EX            "Eksportelasticitet"
     EM            "Importelasticitet"
 
-    profit(t)  "Overskud"
     PZ[t]       "Pris på ikke-boligforbrug"
-
-    gamma[a]     "Vægt"
-    muH          "Vægt"
-    muZ          "Vægt"
-
-    s(a)         "Overlevelsessandsynlighed"
-    S_tot(a)     "Store-S"
-
+    PX_bar(a,t)   "Eksportpris"
+    PM_bar(a,t)   "Importpris"
 
     E         "Substitution, nye bygninger"
     F         "Substitution, nye og gamle bygninger"
     
     r[t]         "Realrente"
     c[a,t]         "Løbende omkostninger"
-    Y_H_bar(t)   "Husholdningernes indkomst"
 
     # Reporting
     p0(t)       "Prisen på nye boliger"
@@ -143,15 +147,15 @@ $BLOCK Modelligninger
 #---------------------------
 E_Q(a,t)$(ax0(a) and tx0(t))..       Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
 
-E_P(a,t)$(tx0T(t))..                  P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+E_P(a,t)$(tx0T(t))..                 P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
-E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
-E_H(t)$(tx0(t))..                    H(t)       =E= J4(t) + muH*(PH(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+E_H(t)$(tx0(t))..                    H(t)       =E= J4(t) + muH(t)*(PH(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
 E_PC(t)$(tx0(t))..                   Y_H(t)     =E= J5(t) + PZ(t)*Z(t) + PH(t)*H(t);
 
-E_p_L(a,t)$(tx0(t))..                Q(a,t)     =E= J6(a,t) + gamma(a)*(p_L(a,t)/PH(t))**(-F) * H(t);
+E_p_L(a,t)$(tx0(t))..                Q(a,t)     =E= J6(a,t) + gamma(a,t)*(p_L(a,t)/PH(t))**(-F) * H(t);
 
 E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(a,t));
 
@@ -163,10 +167,16 @@ E_M(a,t)$(tx0(t))..                  M(a,t)     =E= J11(a,t) + M_bar(a,t)*(P(a,t
 
 # Teminalbetingelser
 #---------------------------
-E_Q_term(a,t)$(tT(t))..   Q(a,t)                =E= J9(a,t) + Q(a,t-1);
+E_Q_term(a,t)$(tT(t))..              Q(a,t)     =E= J9(a,t) + Q(a,t-1);
+
 
 
 $ENDBLOCK
+
+$Model model1 
+Modelligninger
+;
+
 
 #------------------- Antagelser:
 r.l(t)        = 0.05;
@@ -175,6 +185,8 @@ F.l           = 1.5;
 E.l           = 0.7;
 EX.l          = 5;
 EM.l          = 2.5;
+s.l(a)        = 1 - exp(-5 + 0.17*ord(a));
+S_tot.l(a)    = prod(a2$(a2.val<=a.val), s.l(a2));
 
 # "DATA"
 Y_H.l(t)   = 1;
@@ -183,6 +195,80 @@ P.l(a,t)     = 1 - 0.98*ord(a)/card(a);
 Q.l(a,t)     = 0.1;
 X.l(a,t)     = 0;
 M.l(a,t)     = 0;
+
+# Initialisering af priser
+PH.l(t) = 1;
+PZ.l(t) = 1;
+PC.l(t) = 1;
+PX_bar.l(a,t) = P.l(a,t);
+PM_bar.l(a,t) = P.l(a,t);
+
+
+# Bedre end 0
+p_L.l(a,t) = 1;
+#gamma.l(a,t) = 1;
+
+parameter output_a;
+output_a(a, "S_tot") = S_tot.l(a);
+output_a(a, "s") = s.l(a);
+display output_a;
+
+
+
+#-------------------------------------
+# Kalibrering
+#-------------------------------------
+#model model_calib /model1 -E_p_L -E_PH/;
+#model model_calib /model1 -E_Q_term -E_p_L -E_PH/;
+#model model_calib /model1 -E_Q_term/;
+
+$fix all;
+$unfix EXO_CALIB;
+
+#Q.fx(a, t0) = Q.l(a, t0);
+Q.fx(a0, t) = Q.l(a0, t);
+
+# Teminalbetingelse skal ikke gælde for a=0 da vi fixer antallet af nye biler Q(0,t)
+#J9.fx(ax0, t) = J9.l(ax0, t);
+
+
+
+#solve model1 using CNS;
+#solve model_calib using CNS;
+
+# Steady-state initiale værdier
+#Q.l(a, t0) = sum(t1,Q.l(a, t1));
+
+display X_bar.l, M_bar.l,  gamma.l, muH.l, muZ.l, H.l, Y_H_bar.l,  p_L.l, Q.l;
+
+#$exit
+
+
+
+$group EXO_TEST
+    Q(a,t)
+#    J9(a,t)
+
+;
+
+model model_test /E_Q, E_Q_term/;
+#model model_test /E_p_L, E_PH/;
+
+$fix all;
+$unfix EXO_TEST;
+
+#Q.fx(a, t0) = Q.l(a, t0);
+Q.fx(a0, txT) = Q.l(a0, txT);
+#J9.fx(ax0, t) = J9.l(ax0, t);
+
+solve model_test using CNS;
+
+display Q.l;
+
+
+$exit
+
+
 
 Y_H_bar.l(t)   = Y_H.l(t);
 
@@ -241,9 +327,6 @@ output_t(t, "Z") = Z.l(t);
 display output_t;
 
 
-$Model model1 
-Modelligninger
-;
 
 $fix all;
 $unfix ENDO;
