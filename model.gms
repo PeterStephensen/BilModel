@@ -26,6 +26,9 @@ Sets
   aA[a]     "Højeste bygningsalder A"                         
   axA[a]    "Undtagen højeste bygningsalder A"
   ax0A[a]   "Undtagen 0 og højeste bygningsalder A"
+
+  Q_on(a,t)        "Styrer E_Q"
+  Q_diff_on(a,t)   "Styrer E_Q_diff"
 ;  
 
 
@@ -45,6 +48,9 @@ aA(a)     = yes$(ord(a) = card(a));
 axA(a)    = yes$(ord(a) < card(a));
 ax0A(a)   = yes$(ord(a) > 1 and ord(a) < card(a));
 
+Q_on(a,t)      = yes$(ax0(a) and tx0(t));        
+Q_diff_on(a,t) = yes$(tT(t));        
+
 alias(a,a2);
 
 $Group ENDO
@@ -62,11 +68,11 @@ $Group ENDO
 
     X(a,t)    "Eksport af biler"
     M(a,t)    "Import af biler"
-    
+   
  ;
 
 
-$Group EXO_CALIB 
+$Group ENDO_CALIB 
     X_bar(a,t)    "Markedsstørrelse"
     M_bar(a,t)    "Markedsstørrelse"
     gamma[a,t]     "Vægt"
@@ -74,11 +80,12 @@ $Group EXO_CALIB
     muZ(t)          "Vægt"
 
 #    PH[t]     "Pris på boligforbrug"
+    Z[t]          " "
     H[t]          " "
     Y_H_bar(t)   "Husholdningernes indkomst"
     p_L[a,t]      ""
     Q[a,t]        ""
-    J9[a,t]       ""
+#    J9[a,t]       ""
 
 ;
 
@@ -145,9 +152,13 @@ $BLOCK Modelligninger
 
 # Husholdning
 #---------------------------
-E_Q(a,t)$(ax0(a) and tx0(t))..       Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
+E_Q(a,t)$(Q_on(a,t))..               Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
+
+E_Q_diff(a,t)$(Q_diff_on(a,t))..     Q(a,t)     =E= J9(a,t) + Q(a,t-1);
 
 E_P(a,t)$(tx0T(t))..                 P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+
+E_p_L_term(a,t)$(tT(t))..            p_L(a,t)   =E= p_L(a,t-1);
 
 E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
@@ -159,15 +170,12 @@ E_p_L(a,t)$(tx0(t))..                Q(a,t)     =E= J6(a,t) + gamma(a,t)*(p_L(a,
 
 E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(a,t));
 
-E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t) + omv(t);
+E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t);
 
 E_X(a,t)$(tx0(t))..                  X(a,t)     =E= J10(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
 
 E_M(a,t)$(tx0(t))..                  M(a,t)     =E= J11(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
 
-# Teminalbetingelser
-#---------------------------
-E_Q_term(a,t)$(tT(t))..              Q(a,t)     =E= J9(a,t) + Q(a,t-1);
 
 
 
@@ -190,9 +198,8 @@ S_tot.l(a)    = prod(a2$(a2.val<=a.val), s.l(a2));
 
 # "DATA"
 Y_H.l(t)   = 1;
-Z.l(t)     = 0.25;
 P.l(a,t)     = 1 - 0.98*ord(a)/card(a); 
-Q.l(a,t)     = 0.1;
+Q.l('0',t)     = 0.1;
 X.l(a,t)     = 0;
 M.l(a,t)     = 0;
 
@@ -219,55 +226,68 @@ display output_a;
 # Kalibrering
 #-------------------------------------
 #model model_calib /model1 -E_p_L -E_PH/;
-#model model_calib /model1 -E_Q_term -E_p_L -E_PH/;
-#model model_calib /model1 -E_Q_term/;
+model model_calib /model1 -E_PH/;
+#model model_calib /model1/;
 
 $fix all;
-$unfix EXO_CALIB;
+$unfix ENDO_CALIB;
 
-#Q.fx(a, t0) = Q.l(a, t0);
+# Kalibrer til givet ny-køb
 Q.fx(a0, t) = Q.l(a0, t);
 
-# Teminalbetingelse skal ikke gælde for a=0 da vi fixer antallet af nye biler Q(0,t)
-#J9.fx(ax0, t) = J9.l(ax0, t);
+Q_on(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
+Q_diff_on(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+#H.lo(t) =-inf; H.up(t) =inf;
 
 
-
-#solve model1 using CNS;
+solve model1 using CNS;
 #solve model_calib using CNS;
 
 # Steady-state initiale værdier
 #Q.l(a, t0) = sum(t1,Q.l(a, t1));
 
-display X_bar.l, M_bar.l,  gamma.l, muH.l, muZ.l, H.l, Y_H_bar.l,  p_L.l, Q.l;
-
-#$exit
-
-
-
-$group EXO_TEST
-    Q(a,t)
-#    J9(a,t)
-
-;
-
-model model_test /E_Q, E_Q_term/;
-#model model_test /E_p_L, E_PH/;
-
-$fix all;
-$unfix EXO_TEST;
-
-#Q.fx(a, t0) = Q.l(a, t0);
-Q.fx(a0, txT) = Q.l(a0, txT);
-#J9.fx(ax0, t) = J9.l(ax0, t);
-
-solve model_test using CNS;
-
-display Q.l;
-
+display X_bar.l, M_bar.l,  gamma.l, muH.l, muZ.l, H.l, Y_H_bar.l,  p_L.l, Q.l, J7.l;
 
 $exit
 
+
+
+$group ENDO_TEST
+    Q(a,t)
+    H(a,t)
+    Y_H_bar(t)
+    p_L(a,t)
+;
+
+model model_test /E_Q, E_Q_diff, E_P, E_p_L_term, E_PH, E_Y_H/;
+#model model_test /E_Q, E_Q_term/;
+#model model_test /E_p_L, E_PH/;
+
+$fix all;
+$unfix ENDO_TEST;
+
+*Q.fx(a, t0) = Q.l(a, t0);
+#Q.fx(a0, txT) = Q.l(a0, txT);
+Q.fx(a0, t) = Q.l(a0, t);
+#J9.fx(ax0, t) = J9.l(ax0, t);
+#on.fx(a,t)$(ord(t)<ord(a)) = 1;
+
+Q_on(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
+Q_diff_on(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
+
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+H.lo(t) =-inf; H.up(t) =inf;
+
+solve model_test using CNS;
+#solve model1 using CNS;
+
+display Q.l, p_L.l;
+
+display H.lo, H.up;
+
+$exit
 
 
 Y_H_bar.l(t)   = Y_H.l(t);
@@ -294,11 +314,11 @@ H.l(t) = sum(a, p_L.l(a,t)*Q.l(a,t));
 PZ.l(t) = 1;
 PC.l(t) = 1;
 Z.l(t) = Y_H.l(t) - H.l(t);
-muZ.l = sum(t1, Z.l(t1)/Y_H.l(t1));
-muH.l = sum(t1, H.l(t1)/Y_H.l(t1));
+muZ.l(t) = sum(t, Z.l(t)/Y_H.l(t));
+muH.l(t) = sum(t, H.l(t)/Y_H.l(t));
 
 * 7
-gamma.l(a) = sum(t1, (p_L.l(a,t1)/PH.l(t1))**(F.l)*Q.l(a,t1)/H.l(t1));
+gamma.l(a,t) = sum(t, (p_L.l(a,t)/PH.l(t))**(F.l)*Q.l(a,t)/H.l(t));
 
 * Udenrigshandel 
 PX_bar.l(a,t) = P.l(a,t);
@@ -380,7 +400,7 @@ solve model1 using CNS;
 output_vars
 execute_unload 'output\model0.gdx';
 
-#$exit
+$exit
 
 #-----------------------------------
 # Stød
