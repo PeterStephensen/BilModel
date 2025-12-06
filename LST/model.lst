@@ -1,0 +1,340 @@
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 1
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+C o m p i l a t i o n
+
+
+   4  option limcol =0, limrow=0;
+   5  option solprint=off;
+   6  option decimals=8;
+   7   
+   8  Sets
+   9    t         "Tidsperioder"                                  /0*50/
+  10    t0(t)     "Første tidsperiode"
+  11    t1(t)     "Første endogene tidsperiode (Basisår)"
+  12    tT(t)     "Sidste tidsperiode T"
+  13    txT(t)    "Undtagen sidste tidsperiode T"
+  14    txTT(t)   "Undtagen sidste og næstsidste tidsperiode T"
+  15    tx0(t)    "Undtagen første tidsperiode"
+  16    tx1(t)    "Undtagen første endogene tidsperiode"
+  17    tx0T(t)   "Undtagen første og sidste tidsperiode"
+  18    tx1T(t)   "Undtagen første endogene og sidste tidsperiode"
+  19   
+  20    a         "Bygningsaldre"                                 /0*25/
+  21    a0[a]     "Alder for nye bygninger"
+  22    ax0[a]    "Undtagen Alder for nye bygninger"
+  23    aA[a]     "Højeste bygningsalder A"
+  24    axA[a]    "Undtagen højeste bygningsalder A"
+  25    ax0A[a]   "Undtagen 0 og højeste bygningsalder A"
+  26   
+  27    d_Q(a,t)        "Styrer E_Q"
+  28    d_Q_diff(a,t)   "Styrer E_Q_diff"
+  29  ;
+  30   
+  31   
+  32  t0(t)     = yes$(ord(t) = 1);
+  33  t1(t)     = yes$(ord(t) = 2);
+  34  tT(t)     = yes$(ord(t) = card(t));
+  35  txT(t)    = yes$(ord(t) < card(t));
+  36  txTT(t)   = yes$(ord(t) < card(t)-1);
+  37  tx0(t)    = yes$(ord(t) > 1);
+  38  tx1(t)    = yes$(ord(t) > 2);
+  39  tx0T(t)   = yes$(ord(t) < card(t) and ord(t) > 1);
+  40  tx1T(t)   = yes$(ord(t) < card(t) and ord(t) > 2);
+  41   
+  42  a0(a)     = yes$(ord(a) = 1);
+  43  ax0(a)    = yes$(ord(a) > 1);
+  44  aA(a)     = yes$(ord(a) = card(a));
+  45  axA(a)    = yes$(ord(a) < card(a));
+  46  ax0A(a)   = yes$(ord(a) > 1 and ord(a) < card(a));
+  47   
+  48  d_Q(a,t)      = yes$(ax0(a) and tx0(t));
+  49  d_Q_diff(a,t) = yes$(tT(t));
+  50   
+  51  alias(a,a2);
+  52   
+  53  # ----- gamY: Initialize ENDO group -----
+  65   
+  66   
+  67   
+  68  # ----- gamY: Initialize ENDO_CALIB group -----
+  76   
+  77   
+  78  # ----- gamY: Initialize EXO group -----
+ 115   
+ 116   
+ 117  # ----- gamY: Initialize J_led group -----
+ 131   
+ 132   
+ 133   
+ 134  # ----- gamY: Initialize Modelligninger equation block -----
+ 135   
+ 136  # ----- gamY: Initialize None group -----
+ 137   
+ 138  EQUATION E_Q(a,t);
+ 139  E_Q(a,t)$((d_q(a,t)))..                 Q(a,t)      =E=  J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
+ 140  EQUATION E_Q_diff(a,t);
+ 141  E_Q_diff(a,t)$((d_q_diff(a,t)))..       Q(a,t)      =E=  J9(a,t) + Q(a,t-1);
+ 142  EQUATION E_P(a,t);
+ 143  E_P(a,t)$((axa(a) and tx0t(t)))..       P(a+1,t+1)  =E=  J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+ 144  EQUATION E_PA(a,t);
+ 145  E_PA(a,t)$((aa(a) and tx0t(t)))..       0           =E=  J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+ 146  EQUATION E_p_L_term(a,t);
+ 147  E_p_L_term(a,t)$((tt(t)))..             p_L(a,t)    =E=  p_L(a,t-1);
+ 148  EQUATION E_Z(t);
+ 149  E_Z(t)$((tx0(t)))..                     Z(t)        =E=  J3(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+ 150  EQUATION E_H(t);
+ 151  E_H(t)$((tx0(t)))..                     H(t)        =E=  J4(t) + muH(t)*(PH(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+ 152  EQUATION E_PC(t);
+ 153  E_PC(t)$((tx0(t)))..                    Y_H(t)      =E=  J5(t) + PZ(t)*Z(t) + PH(t)*H(t);
+ 154  EQUATION E_p_L(a,t);
+ 155  E_p_L(a,t)$((tx0(t)))..                 Q(a,t)      =E=  J6(a,t) + gamma(a,t)*(p_L(a,t)/PH(t))**(-F) * H(t);
+ 156  EQUATION E_PH(t);
+ 157  E_PH(t)$((tx0(t)))..                    PH(t)*H(t)  =E=  J7(t) + sum(a, p_L(a,t) * Q(a,t));
+ 158  EQUATION E_X(a,t);
+ 159  E_X(a,t)$((tx0(t)))..                   X(a,t)      =E=  J10(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
+ 160  EQUATION E_M(a,t);
+ 161  E_M(a,t)$((tx0(t)))..                   M(a,t)      =E=  J11(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
+ 162   
+ 163  # ----- gamY: Initialize Modelligninger model -----
+ 164  MODEL Modelligninger /
+ 165  E_Q, E_Q_diff, E_P, E_PA, E_p_L_term, E_Z, E_H, E_PC, E_p_L, E_PH, E_X, E_M
+ 166   /;
+ 167   
+ 168   
+ 169  # ----- gamY: Initialize model1 model -----
+ 170  MODEL model1 /
+ 171  E_Q, E_Q_diff, E_P, E_PA, E_p_L_term, E_Z, E_H, E_PC, E_p_L, E_PH, E_X, E_M
+ 172   /;
+ 173   
+ 174   
+ 175  #------------------- Antagelser:
+ 176  r.l(t)        = 0.05;
+ 177  c.l(a,t)      = 0.02 + 0.001*ord(a);
+ 178  F.l           = 1.5;
+ 179  E.l           = 0.7;
+ 180  EX.l          = 5;
+ 181  EM.l          = 2.5;
+ 182  s.l(a)        = 1 - exp(-5 + 0.17*ord(a));
+ 183  S_tot.l(a)    = prod(a2$(a2.val<=a.val), s.l(a2));
+ 184   
+ 185  # "DATA"
+ 186  Y_H.l(t)   = 1;
+ 187  P.l(a,t)     = 1 - 0.98*ord(a)/card(a);
+ 188  Q.l('0',t)     = 0.1;
+ 189  X.l(a,t)     = 0;
+ 190  M.l(a,t)     = 0;
+ 191   
+ 192  # Initialisering af priser
+ 193  PH.l(t) = 1;
+ 194  PZ.l(t) = 1;
+ 195  PC.l(t) = 1;
+ 196  PX_bar.l(a,t) = P.l(a,t);
+ 197  PM_bar.l(a,t) = P.l(a,t);
+ 198   
+ 199   
+ 200  # For ikke at dividere med 0
+ 201  p_L.l(a,t) = 1;
+ 202   
+ 203  #-------------------------------------
+ 204  # Kalibrering
+ 205  #-------------------------------------
+ 206   
+ 207  # ----- gamY: $fix all; -----
+ 269   
+ 270   
+ 271  # ----- gamY: $unfix ENDO_CALIB; -----
+ 292   
+ 293   
+ 294  d_Q(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
+ 295  d_Q_diff(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
+ 296   
+ 297  # $group ENDO_test
+ 298  #     Q(a,t)
+ 299  #     H(t)
+ 300  #     Z(t)
+ 301  #     p_L(a,t)
+ 302  #     muZ(t)
+ 303  #     muH(t)
+ 304  #     X_bar(t)
+ 305  #     M_bar(t)
+ 306  #     gamma(a,t)
+ 307  # ;
+ 308  # $fix all;
+ 309  # $unfix ENDO_test;
+ 310   
+ 311  # model model_test /E_Q, E_Q_diff, E_P, E_PA, E_p_L_term, E_PH, E_PC, E_Z, E_H, E_X, E_M, E_p_L/;
+ 312  # #model model_test /E_Q, E_Q_diff/;
+ 313   
+ 314   
+ 315  # Kalibrer til givet ny-køb
+ 316  Q.fx(a0, t) = Q.l(a0, t);
+ 317   
+ 318  solve model1 using CNS;
+ 319  # solve model_test using CNS;
+ 320   
+ 321  #$exit
+ 322   
+ 323  #-------------------------------------
+ 324  # 0-stød
+ 325  #-------------------------------------
+ 326   
+ 327  # ----- gamY: $fix all; -----
+ 389   
+ 390   
+ 391  # ----- gamY: $unfix ENDO; -----
+ 412   
+ 413   
+ 414  d_Q(a,t)      = yes$(ax0(a) and tx0(t));
+ 415  d_Q_diff(a,t) = yes$(tT(t));
+ 416   
+ 417  # $group ENDO_test
+ 418  #     Q(a,t)
+ 419  # ;
+ 420  # $fix all;
+ 421  # $unfix ENDO_test;
+ 422   
+ 423  # model model_test /E_Q/;
+ 424   
+ 425  # Initial køretøjsbestand
+ 426  Q.fx(a, t0) = Q.l(a, t0);
+ 427   
+ 428  # Eksogen pris på nye biler
+ 429  P.fx(a0,t) = P.l(a0,t);
+ 430   
+ 431  solve model1 using CNS;
+ 432  # solve model_test using CNS;
+ 433   
+ 434  display d_Q, d_Q_diff;
+EXIT c:\psp\BilModel\Expanded\model.gmy
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 2
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Include File Summary
+
+
+   SEQ   GLOBAL TYPE      PARENT   LOCAL  FILENAME
+
+     1        1 INPUT          0       0  c:\psp\BilModel\Expanded\model.gmy
+     2      435 EXIT           1     435  c:\psp\BilModel\Expanded\model.gmy
+
+
+COMPILATION TIME     =        0.000 SECONDS      3 MB  46.4.1 485757e2 WEX-WEI
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 3
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE model1 Using CNS From line 318
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [        NA,        NA] - Zero values observed as well
+Bound     [min, max] : [ 1.340E-02, 5.000E+00] - Zero values observed as well
+Matrix    [min, max] : [ 7.213E-03, 1.050E+00] - Zero values observed as well
+
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 4
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model1 Using CNS From line 318
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          12     SINGLE EQUATIONS        6,675
+BLOCKS OF VARIABLES          36     SINGLE VARIABLES       21,453
+NON ZERO ELEMENTS        44,046     NON LINEAR N-Z         28,570
+CODE LENGTH              60,865     CONSTANT POOL              16
+SINGLE =E|X= EQUS         6,675     SINGLE UNFIXED VARS     6,675
+
+
+GENERATION TIME      =        0.047 SECONDS      9 MB  46.4.1 485757e2 WEX-WEI
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 5
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Solution Report     SOLVE model1 Using CNS From line 318
+
+
+               S O L V E      S U M M A R Y
+
+     MODEL   model1              
+     TYPE    CNS                 
+     SOLVER  CONOPT              FROM LINE  318
+
+**** SOLVER STATUS     1 Normal Completion
+**** MODEL STATUS      15 Solved Unique
+
+ RESOURCE USAGE, LIMIT          0.031 10000000000.000
+ ITERATION COUNT, LIMIT         0    2147483647
+ EVALUATION ERRORS              0             0
+ 
+ 
+    C O N O P T   version 4.33
+    Copyright (C) ARKI Consulting and Development A/S
+                  Bagsvaerdvej 246 A
+                  DK-2880 Bagsvaerd, Denmark
+ 
+    Will use up to 8 threads.
+ 
+ 
+    The user model has 6675 constraints and 21453 variables
+    with 44046 Jacobian elements, 28570 of which are nonlinear.
+ 
+    The pre-triangular part of the model has 6675 constraints and 21453 variables.
+ 
+ ** Feasible solution to a square system.
+ 
+ 
+ CONOPT time Total                            0.037 seconds
+   of which: Function evaluations             0.004 = 10.8%
+             1st Derivative evaluations       0.004 = 10.8%
+             Interval derivative evals        0.011 = 29.7%
+ 
+
+
+**** REPORT SUMMARY :        0 INFEASIBLE
+                             0  DEPENDENT
+                             0     ERRORS
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 6
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Range Statistics    SOLVE model1 Using CNS From line 431
+
+
+RANGE STATISTICS (ABSOLUTE NON-ZERO FINITE VALUES)
+
+RHS       [min, max] : [        NA,        NA] - Zero values observed as well
+Bound     [min, max] : [ 3.070E-03, 5.000E+00] - Zero values observed as well
+Matrix    [min, max] : [ 5.817E-04, 5.981E+00] - Zero values observed as well
+
+**** ERROR: CNS models must be square
+This model contains 6676 equality rows and 6650 unfixed columns
+GAMS 46.4.1  485757e2 Apr 16, 2024          WEX-WEI x86 64bit/MS Windows - 12/06/25 23:44:58 Page 7
+G e n e r a l   A l g e b r a i c   M o d e l i n g   S y s t e m
+Model Statistics    SOLVE model1 Using CNS From line 431
+
+
+MODEL STATISTICS
+
+BLOCKS OF EQUATIONS          12     SINGLE EQUATIONS        6,676
+BLOCKS OF VARIABLES          36     SINGLE VARIABLES       21,453
+NON ZERO ELEMENTS        44,949     NON LINEAR N-Z         29,170
+CODE LENGTH              62,365     CONSTANT POOL              16
+SINGLE =E|X= EQUS         6,676     SINGLE UNFIXED VARS     6,650
+
+
+GENERATION TIME      =        0.047 SECONDS     10 MB  46.4.1 485757e2 WEX-WEI
+
+**** SOLVE from line 431 ABORTED, EXECERROR = 1
+
+
+EXECUTION TIME       =        0.187 SECONDS     10 MB  46.4.1 485757e2 WEX-WEI
+
+
+USER: Large MUD - 20 User License                    S241024|0002CA-WIN
+      DREAM, Danish Rational Economic Agents Model                DC620
+
+
+**** FILE SUMMARY
+
+Input      c:\psp\BilModel\Expanded\model.gmy
+Output     c:\psp\BilModel\LST\model.lst
+Save       c:\psp\BilModel\Saved\model.g0?
+
+**** USER ERROR(S) ENCOUNTERED
+
+**** WARNING - COMPILER OPTIONS ARE NON DEFAULT     ONEMPTY
+     EOLCOM # 

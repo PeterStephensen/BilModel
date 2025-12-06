@@ -13,7 +13,7 @@ root = dt.find_root()
 sys.path.insert(0,root)
 import paths
 
-run("model.gms", s="Saved/model")
+  run("model.gms", s="Saved/model")
 
 # ======================================================================
 # Figurer 

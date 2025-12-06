@@ -3,22 +3,17 @@ option limcol =0, limrow=0;
 option solprint=off;
 option decimals=8;
 
-#--------------------------------------------------
-# BY=1 betyder By. BY=0 betyder Land 
-#--------------------------------------------------
-$setlocal BY 0;  
-
 Sets 
   t         "Tidsperioder"                                  /0*50/
-  t0[t]     "Første tidsperiode"
-  t1[t]     "Første endogene tidsperiode (Basisår)" 
-  tT[t]     "Sidste tidsperiode T"
-  txT[t]    "Undtagen sidste tidsperiode T"
-  txTT[t]   "Undtagen sidste og næstsidste tidsperiode T"
-  tx0[t]    "Undtagen første tidsperiode"
-  tx1[t]    "Undtagen første endogene tidsperiode"
-  tx0T[t]   "Undtagen første og sidste tidsperiode"
-  tx1T[t]   "Undtagen første endogene og sidste tidsperiode"
+  t0(t)     "Første tidsperiode"
+  t1(t)     "Første endogene tidsperiode (Basisår)" 
+  tT(t)     "Sidste tidsperiode T"
+  txT(t)    "Undtagen sidste tidsperiode T"
+  txTT(t)   "Undtagen sidste og næstsidste tidsperiode T"
+  tx0(t)    "Undtagen første tidsperiode"
+  tx1(t)    "Undtagen første endogene tidsperiode"
+  tx0T(t)   "Undtagen første og sidste tidsperiode"
+  tx1T(t)   "Undtagen første endogene og sidste tidsperiode"
   
   a         "Bygningsaldre"                                 /0*25/
   a0[a]     "Alder for nye bygninger"                       
@@ -27,8 +22,8 @@ Sets
   axA[a]    "Undtagen højeste bygningsalder A"
   ax0A[a]   "Undtagen 0 og højeste bygningsalder A"
 
-  Q_on(a,t)        "Styrer E_Q"
-  Q_diff_on(a,t)   "Styrer E_Q_diff"
+  d_Q(a,t)        "Styrer E_Q"
+  d_Q_diff(a,t)   "Styrer E_Q_diff"
 ;  
 
 
@@ -48,63 +43,49 @@ aA(a)     = yes$(ord(a) = card(a));
 axA(a)    = yes$(ord(a) < card(a));
 ax0A(a)   = yes$(ord(a) > 1 and ord(a) < card(a));
 
-Q_on(a,t)      = yes$(ax0(a) and tx0(t));        
-Q_diff_on(a,t) = yes$(tT(t));        
+d_Q(a,t)      = yes$(ax0(a) and tx0(t));        
+d_Q_diff(a,t) = yes$(tT(t));        
 
 alias(a,a2);
 
 $Group ENDO
-    p_L[a,t] "User cost for bygninger"
-    Q[a,t]    "Antal biler"
-    P[a,t]    "Markedspris for bygninger"
-    
-   
-    H[t]      "Boligforbrug"
-    Z[t]      "Ikke-boligforbrug"
-    PH[t]     "Pris på boligforbrug"
-    PC[t]     "Forbrugerprisindeks"
-    omv[t]    "Omvurderinger"
-    Y_H[t]    "Løbende indtægter"
-
+    p_L(a,t) "User cost for bygninger"
+    Q(a,t)    "Antal biler"
+    P(a,t)    "Markedspris for bygninger"    
+    H(t)      "Boligforbrug"
+    Z(t)      "Ikke-boligforbrug"
+    PH(t)     "Pris på boligforbrug"
+    PC(t)     "Forbrugerprisindeks"
     X(a,t)    "Eksport af biler"
-    M(a,t)    "Import af biler"
-   
+    M(a,t)    "Import af biler"   
  ;
 
 
 $Group ENDO_CALIB 
     X_bar(a,t)    "Markedsstørrelse"
     M_bar(a,t)    "Markedsstørrelse"
-    gamma[a,t]     "Vægt"
+    gamma(a,t)     "Vægt"
     muH(t)          "Vægt"
     muZ(t)          "Vægt"
-
-#    PH[t]     "Pris på boligforbrug"
-    Z[t]          " "
-    H[t]          " "
-    Y_H_bar(t)   "Husholdningernes indkomst"
-    p_L[a,t]      ""
-    Q[a,t]        ""
-#    J9[a,t]       ""
-
+    Z(t)          " "
+    H(t)          " "
+    p_L(a,t)      ""
+    Q(a,t)        ""
 ;
 
 $Group EXO 
     s(a)         "Overlevelsessandsynlighed"
     S_tot(a)     "Store-S"
-
     EX            "Eksportelasticitet"
     EM            "Importelasticitet"
-
-    PZ[t]       "Pris på ikke-boligforbrug"
+    Y_H(t)    "Løbende indtægter"
+    PZ(t)       "Pris på ikke-boligforbrug"
     PX_bar(a,t)   "Eksportpris"
     PM_bar(a,t)   "Importpris"
-
     E         "Substitution, nye bygninger"
     F         "Substitution, nye og gamle bygninger"
-    
-    r[t]         "Realrente"
-    c[a,t]         "Løbende omkostninger"
+    r(t)         "Realrente"
+    c(a,t)         "Løbende omkostninger"
 
     # Reporting
     p0(t)       "Prisen på nye boliger"
@@ -129,7 +110,6 @@ $Group EXO
     p_L10(t)    "Leasing-pris på 10 år gammel bil"
     p_L24(t)    "Leasing-pris på 10 år gammel bil"
     p_L25(t)    "Leasing-pris på 10 år gammel bil"
-
 ;
 
 $Group J_led
@@ -146,17 +126,21 @@ $Group J_led
     J11(a,t)   "J-led"
 ;
 
-
 $BLOCK Modelligninger
+
+# d_Q(a,t)      = yes$(ax0(a) and tx0(t));        
+# d_Q_diff(a,t) = yes$(tT(t));        
 
 
 # Husholdning
 #---------------------------
-E_Q(a,t)$(Q_on(a,t))..               Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
+E_Q(a,t)$(d_Q(a,t))..                Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
 
-E_Q_diff(a,t)$(Q_diff_on(a,t))..     Q(a,t)     =E= J9(a,t) + Q(a,t-1);
+E_Q_diff(a,t)$(d_Q_diff(a,t))..      Q(a,t)     =E= J9(a,t) + Q(a,t-1);
 
-E_P(a,t)$(tx0T(t))..                 P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+
+E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
 E_p_L_term(a,t)$(tT(t))..            p_L(a,t)   =E= p_L(a,t-1);
 
@@ -170,14 +154,9 @@ E_p_L(a,t)$(tx0(t))..                Q(a,t)     =E= J6(a,t) + gamma(a,t)*(p_L(a,
 
 E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(a,t));
 
-E_Y_H(t)$(tx0(t))..                  Y_H(t)     =E= J8(t) + Y_H_bar(t);
-
 E_X(a,t)$(tx0(t))..                  X(a,t)     =E= J10(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
 
 E_M(a,t)$(tx0(t))..                  M(a,t)     =E= J11(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
-
-
-
 
 $ENDBLOCK
 
@@ -211,160 +190,79 @@ PX_bar.l(a,t) = P.l(a,t);
 PM_bar.l(a,t) = P.l(a,t);
 
 
-# Bedre end 0
+# For ikke at dividere med 0
 p_L.l(a,t) = 1;
-#gamma.l(a,t) = 1;
-
-parameter output_a;
-output_a(a, "S_tot") = S_tot.l(a);
-output_a(a, "s") = s.l(a);
-display output_a;
-
-
 
 #-------------------------------------
 # Kalibrering
 #-------------------------------------
-#model model_calib /model1 -E_p_L -E_PH/;
-model model_calib /model1 -E_PH/;
-#model model_calib /model1/;
-
 $fix all;
 $unfix ENDO_CALIB;
+
+d_Q(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
+d_Q_diff(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
+
+# $group ENDO_test
+#     Q(a,t)
+#     H(t)
+#     Z(t)
+#     p_L(a,t)
+#     muZ(t)
+#     muH(t)
+#     X_bar(t)
+#     M_bar(t)
+#     gamma(a,t)
+# ;
+# $fix all;
+# $unfix ENDO_test;
+
+# model model_test /E_Q, E_Q_diff, E_P, E_PA, E_p_L_term, E_PH, E_PC, E_Z, E_H, E_X, E_M, E_p_L/;
+# #model model_test /E_Q, E_Q_diff/;
+
 
 # Kalibrer til givet ny-køb
 Q.fx(a0, t) = Q.l(a0, t);
 
-Q_on(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
-Q_diff_on(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-#H.lo(t) =-inf; H.up(t) =inf;
-
-
 solve model1 using CNS;
-#solve model_calib using CNS;
+# solve model_test using CNS;
 
-# Steady-state initiale værdier
-#Q.l(a, t0) = sum(t1,Q.l(a, t1));
-
-display X_bar.l, M_bar.l,  gamma.l, muH.l, muZ.l, H.l, Y_H_bar.l,  p_L.l, Q.l, J7.l;
-
-$exit
-
-
-
-$group ENDO_TEST
-    Q(a,t)
-    H(a,t)
-    Y_H_bar(t)
-    p_L(a,t)
-;
-
-model model_test /E_Q, E_Q_diff, E_P, E_p_L_term, E_PH, E_Y_H/;
-#model model_test /E_Q, E_Q_term/;
-#model model_test /E_p_L, E_PH/;
-
-$fix all;
-$unfix ENDO_TEST;
-
-*Q.fx(a, t0) = Q.l(a, t0);
-#Q.fx(a0, txT) = Q.l(a0, txT);
-Q.fx(a0, t) = Q.l(a0, t);
-#J9.fx(ax0, t) = J9.l(ax0, t);
-#on.fx(a,t)$(ord(t)<ord(a)) = 1;
-
-Q_on(a,t)      = yes$(ord(t) >= ord(a) and ax0(a) and tx0(t));
-Q_diff_on(a,t) = yes$(ord(t) <= ord(a) and ax0(a) and tx0(t));
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-H.lo(t) =-inf; H.up(t) =inf;
-
-solve model_test using CNS;
-#solve model1 using CNS;
-
-display Q.l, p_L.l;
-
-display H.lo, H.up;
-
-$exit
-
-
-Y_H_bar.l(t)   = Y_H.l(t);
-
-* 1
-s.l(a) = 1 - exp(-5 + 0.17*ord(a));
-s.l('0') = 1;
-#s.l(aA) = 0;
-
-* 2
-S_tot.l(a) = prod(a2$(a2.val<=a.val), s.l(a2));
-
-* 3
-Q.l(a,t) = S_tot.l(a)*Q.l('0',t);
-
-* 4
-p_L.l(a,t) = c.l(a,t) + (r.l(t)*P.l(a,t) + P.l(a,t) - P.l(a+1,t))/((1+r.l(t))*S_tot.l(a));
-
-* 5 
-PH.l(t) = 1;
-H.l(t) = sum(a, p_L.l(a,t)*Q.l(a,t));
-
-* 6
-PZ.l(t) = 1;
-PC.l(t) = 1;
-Z.l(t) = Y_H.l(t) - H.l(t);
-muZ.l(t) = sum(t, Z.l(t)/Y_H.l(t));
-muH.l(t) = sum(t, H.l(t)/Y_H.l(t));
-
-* 7
-gamma.l(a,t) = sum(t, (p_L.l(a,t)/PH.l(t))**(F.l)*Q.l(a,t)/H.l(t));
-
-* Udenrigshandel 
-PX_bar.l(a,t) = P.l(a,t);
-X_bar.l(a,t) = X.l(a,t);
-
-PM_bar.l(a,t) = P.l(a,t);
-M_bar.l(a,t) = M.l(a,t);
-
-display profit.l;
 #$exit
 
-
-display s.l, S_tot.l, Q.l, muZ.l, muH.l, P.l, p_L.l, S_tot.l, gamma.l;
-
-parameter output_a;
-output_a(a, "S_tot") = S_tot.l(a);
-output_a(a, "s") = s.l(a);
-output_a(a, "p_L") = p_l.l(a, '1');
-output_a(a, "Q") = Q.l(a, '1');
-output_a(a, "P") = P.l(a, '1');
-display output_a;
-
-parameter output_t;
-output_t(t, "H") = H.l(t);
-output_t(t, "Z") = Z.l(t);
-display output_t;
-
-
-
+#-------------------------------------
+# 0-stød
+#-------------------------------------
 $fix all;
 $unfix ENDO;
 
-#$unfix J_led;
-#solve model1 using CNS;
-#display J1.l,J2.l,J3.l,J4.l,J5.l,J6.l,J7.l,J8.l,J9.l; 
-#$exit
+d_Q(a,t)      = yes$(ax0(a) and tx0(t));        
+d_Q_diff(a,t) = yes$(tT(t));        
 
+# $group ENDO_test
+#     Q(a,t)
+# ;
+# $fix all;
+# $unfix ENDO_test;
 
-# Initialisering
+# model model_test /E_Q/;
+
+# Initial køretøjsbestand
 Q.fx(a, t0) = Q.l(a, t0);
-P.fx(a, t0) = P.l(a, t0);
 
-# Nypris er eksogen
-p.fx('0',t) = p.l('0',t);
+# Eksogen pris på nye biler
+P.fx(a0,t) = P.l(a0,t);
 
-omv.fx(t) = 0;
+solve model1 using CNS;
+# solve model_test using CNS;
+
+display d_Q, d_Q_diff;
+
+$exit
+
+#-------------------------------------
+# Stød
+#-------------------------------------
+
+
 
 # Her stødes eksport ind (M=X=0 i grundkalibrering)
 X_bar.fx(a,t)$(t.val>5 and a.val >0 and a.val<6) = 0.001;
