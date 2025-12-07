@@ -73,6 +73,7 @@ $Group ENDO_CALIB
     Q(a,t)        ""
 ;
 
+
 $Group EXO 
     s(a)         "Overlevelsessandsynlighed"
     S_tot(a)     "Store-S"
@@ -115,15 +116,16 @@ $Group EXO
 $Group J_led
     J1(a,t)   "J-led"
     J2(a,t)   "J-led"
-    J3(t)   "J-led"
-    J4(t)   "J-led"
-    J5(t)   "J-led"
-    J6(a,t)   "J-led"
-    J7(t)   "J-led"
-    J8(t)   "J-led"
+    J3(a,t)   "J-led"
+    J4(a,t)   "J-led"
+    J5(a,t)   "J-led"
+    J6(t)     "J-led"
+    J7(t)     "J-led"
+    J8(t)     "J-led"
     J9(a,t)   "J-led"
-    J10(a,t)   "J-led"
-    J11(a,t)   "J-led"
+    J10(t)    "J-led"
+    J11(a,t)  "J-led"
+    J12(a,t)  "J-led"
 ;
 
 $BLOCK Modelligninger
@@ -134,29 +136,31 @@ $BLOCK Modelligninger
 
 # Husholdning
 #---------------------------
-E_Q(a,t)$(d_Q(a,t))..                Q(a,t)     =E= J2(a,t) + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
+E_Q(a,t)$(d_Q(a,t))..           Q(a,t)     =E= J1(a,t)  + s(a)*Q(a-1,t-1) + M(a,t) - X(a,t);
 
-E_Q_diff(a,t)$(d_Q_diff(a,t))..      Q(a,t)     =E= J9(a,t) + Q(a,t-1);
+E_Q_diff(a,t)$(d_Q_diff(a,t)).. Q(a,t)     =E= J2(a,t)  + Q(a,t-1);
 
-E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+# E_P(a,t)$(tx0T(t)).. P(a+1,t+1) =E= J3(a,t)  + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
-E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J1(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+E_P(a,t)$(axA(a) and tx0T(t)).. P(a+1,t+1) =E= J3(a,t)  + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
-E_p_L_term(a,t)$(tT(t))..            p_L(a,t)   =E= p_L(a,t-1);
+E_PA(a,t)$(aA(a) and tx0T(t)).. 0          =E= J4(a,t)  + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
 
-E_Z(t)$(tx0(t))..                    Z(t)       =E= J3(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+E_p_L_term(a,t)$(tT(t))..       p_L(a,t)   =E= J5(a,t)  + p_L(a,t-1);
 
-E_H(t)$(tx0(t))..                    H(t)       =E= J4(t) + muH(t)*(PH(t)/PC(t))**(-E)*Y_H(t)/PC(t);
+E_Z(t)$(tx0(t))..               Z(t)       =E= J6(t)    + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
-E_PC(t)$(tx0(t))..                   Y_H(t)     =E= J5(t) + PZ(t)*Z(t) + PH(t)*H(t);
+E_H(t)$(tx0(t))..               H(t)       =E= J7(t)    + muH(t)*(PH(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
-E_p_L(a,t)$(tx0(t))..                Q(a,t)     =E= J6(a,t) + gamma(a,t)*(p_L(a,t)/PH(t))**(-F) * H(t);
+E_PC(t)$(tx0(t))..              Y_H(t)     =E= J8(t)    + PZ(t)*Z(t) + PH(t)*H(t);
 
-E_PH(t)$(tx0(t))..                   PH(t)*H(t) =E= J7(t) + sum(a, p_L(a,t) * Q(a,t));
+E_p_L(a,t)$(tx0(t))..           Q(a,t)     =E= J9(a,t)  + gamma(a,t)*(p_L(a,t)/PH(t))**(-F) * H(t);
 
-E_X(a,t)$(tx0(t))..                  X(a,t)     =E= J10(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
+E_PH(t)$(tx0(t))..              PH(t)*H(t) =E= J10(t)   + sum(a, p_L(a,t) * Q(a,t));
 
-E_M(a,t)$(tx0(t))..                  M(a,t)     =E= J11(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
+E_X(a,t)$(tx0(t))..             X(a,t)     =E= J11(a,t) + X_bar(a,t)*(P(a,t)/PX_bar(a,t))**(-EX);
+
+E_M(a,t)$(tx0(t))..             M(a,t)     =E= J12(a,t) + M_bar(a,t)*(P(a,t)/PM_bar(a,t))**(EM);
 
 $ENDBLOCK
 
@@ -226,27 +230,41 @@ Q.fx(a0, t) = Q.l(a0, t);
 solve model1 using CNS;
 # solve model_test using CNS;
 
-#$exit
+display X_bar.l, M_bar.l, gamma.l, muH.l, muZ.l, Z.l, H.l, p_L.l, Q.l;
+
+# $exit
 
 #-------------------------------------
 # 0-stød
 #-------------------------------------
-$fix all;
-$unfix ENDO;
-
 d_Q(a,t)      = yes$(ax0(a) and tx0(t));        
 d_Q_diff(a,t) = yes$(tT(t));        
 
+$fix all;
+$unfix ENDO;
+
+
 # $group ENDO_test
-#     Q(a,t)
+#     P(a,t)
 # ;
 # $fix all;
 # $unfix ENDO_test;
 
-# model model_test /E_Q/;
+# # H.fx(t) = H.l(t);
+# #PH.fx(t) = PH.l(t);
+# p_L.fx(a, t) = p_L.l(a, t);
+# P.fx(a, tT) = P.l(a, tT);
+
+# Q.fx(a0, t) = Q.l(a0, t);
+
+
+# model model_test /E_P, E_PA/;
+# # model model_test /E_Q, E_p_L, E_PH, E_Z, E_H, E_PC/;
+# # model model_test /E_Q, E_P, E_PA/;
 
 # Initial køretøjsbestand
 Q.fx(a, t0) = Q.l(a, t0);
+P.fx(a, t0) = P.l(a, t0);
 
 # Eksogen pris på nye biler
 P.fx(a0,t) = P.l(a0,t);
@@ -254,7 +272,7 @@ P.fx(a0,t) = P.l(a0,t);
 solve model1 using CNS;
 # solve model_test using CNS;
 
-display d_Q, d_Q_diff;
+display d_Q, d_Q_diff, p_L.l;
 
 $exit
 
