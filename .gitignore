@@ -1,12 +1,14 @@
 #Ignore file types 
 *.pyc
 *.lyx~
+*.lyx#
 *.gmy
 *.ipynb_checkpoints
 *.g00
 *.lst
 *.gsp
 *.pkl
+*.gdx
 
 __pycache__/
 
