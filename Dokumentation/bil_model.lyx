@@ -1,0 +1,644 @@
+#LyX 2.4 created this file. For more info see https://www.lyx.org/
+\lyxformat 620
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass article
+\use_default_options true
+\begin_modules
+theorems-ams
+eqs-within-sections
+figs-within-sections
+\end_modules
+\maintain_unincluded_children no
+\language english
+\language_package default
+\inputencoding auto-legacy
+\fontencoding auto
+\font_roman "times" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format default
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize 12
+\spacing onehalf
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 1
+\use_package amssymb 1
+\use_package cancel 1
+\use_package esint 1
+\use_package mathdots 1
+\use_package mathtools 1
+\use_package mhchem 1
+\use_package stackrel 1
+\use_package stmaryrd 1
+\use_package undertilde 1
+\cite_engine natbib
+\cite_engine_type authoryear
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\use_refstyle 1
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\leftmargin 2.5cm
+\topmargin 2.6cm
+\rightmargin 2.5cm
+\bottommargin 3cm
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content false
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\end_header
+
+\begin_body
+
+\begin_layout Title
+Bil-model med eksogen skrotning
+\end_layout
+
+\begin_layout Author
+Peter Stephensen,
+ DREAM 
+\end_layout
+
+\begin_layout Section
+Indledning
+\end_layout
+
+\begin_layout Standard
+Her opstilles en model med eksogen skrotning...
+ 
+\end_layout
+
+\begin_layout Section
+Model
+\end_layout
+
+\begin_layout Standard
+Vi betragter mange ens leasing-firmaer.
+ Bilerne er kapitalapparat i disse firmaer (og optræder derfor ikke i husholdningernes formue).
+ Firmaerne lejer bilerne ud til husholdningerne til leasing-prisen 
+\begin_inset Formula $p_{a,t}^{L}$
+\end_inset
+
+ hvor 
+\begin_inset Formula $a$
+\end_inset
+
+ er alder og 
+\begin_inset Formula $t$
+\end_inset
+
+ er tid.
+\end_layout
+
+\begin_layout Standard
+Et antal nye biler 
+\begin_inset Formula $Q_{0,t}$
+\end_inset
+
+ købes af leasing-firmaerne primo 
+\begin_inset Formula $t$
+\end_inset
+
+ til den eksogene nypris 
+\begin_inset Formula $P_{t}^{\text{new}}.$
+\end_inset
+
+ Bilernes alder er 0 år det første år forbrugerne får glæde af dem - dvs.
+ i periode 
+\begin_inset Formula $t.$
+\end_inset
+
+ Dette betyder at forbrugerne anvender bilerne med det sammen (der er ikke time-to-build).
+ 
+\end_layout
+
+\begin_layout Standard
+På investeringstidspunktet 
+\begin_inset Formula $t$
+\end_inset
+
+ skal det for hver bil gælde at:
+ 
+\begin_inset Formula 
+\[
+P_{t}^{\text{new}}=\sum_{v=t}^{\infty}\left(p_{v-t,v}^{L}-c_{v-t,\tau}\right)S_{v-t}\frac{R_{v}}{R_{t}}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $c_{a,t}$
+\end_inset
+
+ er løbende omkostninger og 
+\begin_inset Formula $S_{a}$
+\end_inset
+
+ er andelen af en kohorte der stadig kører på vejene ved alder 
+\begin_inset Formula $a.$
+\end_inset
+
+ Det gælder at
+\begin_inset Formula 
+\[
+S_{a}=\prod_{s=0}^{a}s_{a}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $s_{a}$
+\end_inset
+
+ er den eksogene overlevelsessandsynlighed.
+ Vi antager at 
+\begin_inset Formula $S_{0}=1$
+\end_inset
+
+ og at der findes 
+\begin_inset Formula $A$
+\end_inset
+
+ således at 
+\begin_inset Formula $S_{a}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $a>A.$
+\end_inset
+
+ Tilbagediskonteringsfaktoren 
+\begin_inset Formula $R_{t}$
+\end_inset
+
+ er defineret ved:
+\begin_inset Formula 
+\[
+R_{t}=\prod_{v=0}^{t}\frac{1}{1+r_{v}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Bestanden af biler følger ligningen:
+\begin_inset Formula 
+\[
+Q_{a,t}=s_{a}Q_{a-1,t-1}+M_{a,t}-X_{a,t}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $M_{a,t}$
+\end_inset
+
+ er import af brugte biler og 
+\begin_inset Formula $X_{a,t}$
+\end_inset
+
+ er eksport af brugte biler (beskrives nedenfor).
+\end_layout
+
+\begin_layout Standard
+Værdien af en bil for leasing-firmaet (ny eller brugt) er primo periode 
+\begin_inset Formula $t$
+\end_inset
+
+ givet ved:
+\begin_inset Formula 
+\begin{equation}
+P_{a,t}^{\text{}}=\sum_{v=t}^{\infty}\left(p_{a+v-t,v}^{L}-c_{a+v-t,v}\right)S_{a+v-t}\frac{R_{v}}{R_{t}}\label{eq:P}
+\end{equation}
+
+\end_inset
+
+Man kan tænke på 
+\begin_inset Formula $P_{a,t}$
+\end_inset
+
+ som prisen på et brugtbilsmarked mellem leasing-firmaerne.
+ Da alle firmaerne er ens vil der ikke være handel i symmetrisk ligevægt.
+ 
+\end_layout
+
+\begin_layout Standard
+Ligningen (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) er ikke påvirket af import fordi det antages at en bil købt i udlandet koster det samme som den indenlandske (dette argumenteres der for nedenfor);
+ - dvs.
+ 
+\begin_inset Formula $P_{a,t}.$
+\end_inset
+
+ På samme måde er (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) ikke påvirket af eksport fordi det antages at biler solgt på eksportmarkedet koster det samme som på hjemmemarkedet (der er ikke price-to-marked).
+\end_layout
+
+\begin_layout Standard
+Det fremgår af (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) at
+\begin_inset Formula 
+\[
+P_{0,t}=P_{t}^{\text{new}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ud fra (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) kan det vises at:
+\begin_inset Formula 
+\begin{equation}
+P_{a+1,t+1}^{\text{}}=\left(1+r_{t+1}\right)\left(P_{a,t}^{\text{}}-\left(p_{a,t}^{L}-c_{a,t}\right)S_{a}\right)\label{eq:P_diff}
+\end{equation}
+
+\end_inset
+
+Dette kan også skrives som
+\begin_inset Formula 
+\[
+p_{a,t}^{L}=c_{a,t}+\frac{r_{t+1}P_{a,t}^{\text{}}+\left(P_{a,t}^{\text{}}-P_{a+1,t+1}^{\text{}}\right)}{\left(1+r_{t+1}\right)S_{a}}
+\]
+
+\end_inset
+
+således at leasing-prisen er et klassisk user-cost-koncept.
+ 
+\end_layout
+
+\begin_layout Standard
+Det fremgår af (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) at 
+\begin_inset Formula $P_{A+1,t}=0$
+\end_inset
+
+ idet 
+\begin_inset Formula $S_{a}=0$
+\end_inset
+
+ for 
+\begin_inset Formula $a>A.$
+\end_inset
+
+ Fra (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:P_diff"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) har vi da at:
+\begin_inset Formula 
+\[
+P_{A,t}^{\text{}}=\left(p_{A,t}^{L}-c_{A,t}\right)S_{A}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Husholdningerne efterspørger et aggregat af biler 
+\begin_inset Formula $H_{t}$
+\end_inset
+
+ og andet 
+\begin_inset Formula $Z_{t}:$
+\end_inset
+
+
+\begin_inset Formula 
+\[
+H_{t}=\mu_{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Z_{t}=\mu_{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{t}^{H}H_{t}+P_{t}^{Z}Z_{t}=Y_{t}^{H}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $Y_{t}^{H}$
+\end_inset
+
+ er husholdningernes løbende indkomst (vi ser bort fra formue i dette simple eksempel).
+ Efterspørgslen efter biler er givet ved:
+\begin_inset Formula 
+\[
+Q_{a,t}=\gamma_{a}\left(\frac{p_{a,t}^{L}}{P_{t}^{H}}\right)^{-F}H_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{t}^{H}H_{t}=\sum_{a=0}^{A}p_{a,t}^{L}Q_{a,t}
+\]
+
+\end_inset
+
+En faldende fordelingsparameter 
+\begin_inset Formula $\gamma_{a}$
+\end_inset
+
+ modellerer at husholdningerne foretrækker nye biler.
+\end_layout
+
+\begin_layout Standard
+Vi antager at udenlandske leasing-firmaer efterspørger indenlandske biler i følge Armington-funktionen:
+\begin_inset Formula 
+\[
+X_{a,t}=\overline{X}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{X}}\right)^{-E_{X}}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $\overline{P}_{a,t}^{X}$
+\end_inset
+
+ er det gennemsnitlige prisniveau på eksportmarkederne og 
+\begin_inset Formula $\overline{X}_{a,t}$
+\end_inset
+
+ er en proxy for markedsstørrelse.
+\end_layout
+
+\begin_layout Standard
+Hvis de indenlandske leasing-firmaer importerer brugte biler antager vi at prisen 
+\begin_inset Formula $P_{a,t}^{M}$
+\end_inset
+
+ er voksende i antallet af importerede biler:
+\begin_inset Formula 
+\[
+P_{a,t}^{M}=\overline{P}_{a,t}^{M}\left(\frac{M_{a,t}}{\overline{M}_{a,t}}\right)^{\beta_{M}}
+\]
+
+\end_inset
+
+hvor 
+\begin_inset Formula $\overline{P}_{a,t}^{M}$
+\end_inset
+
+ er det gennemsnitlige prisniveau på importmarkederne og 
+\begin_inset Formula $\overline{M}_{a,t}$
+\end_inset
+
+ er en proxy for markedsstørrelse.
+ Dette kan ses som et resultat af søgeadfærd.
+ Så længe 
+\begin_inset Formula $P_{a,t}^{M}<P_{a,t}$
+\end_inset
+
+ kan det betale sig at importere flere biler.
+ Vi antager derfor at der importeres så meget at 
+\begin_inset Formula $P_{a,t}^{M}=P_{a,t},$
+\end_inset
+
+ eller
+\begin_inset Formula 
+\[
+M_{a,t}=\overline{M}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Samlet model
+\end_layout
+
+\begin_layout Standard
+Antag at modellen er defineret for 
+\begin_inset Formula $t\geq t_{0}.$
+\end_inset
+
+ Den samlede model ser således ud:
+ 
+\end_layout
+
+\begin_layout Subsection*
+Leasing-firma
+\end_layout
+
+\begin_layout Subsection*
+\begin_inset Formula 
+\[
+Q_{a,t}=s_{a}Q_{a-1,t-1}+M_{a,t}-X_{a,t},\,0<a\leq A
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{a+1,t+1}^{\text{}}=\left(1+r_{t+1}\right)\left(P_{a,t}^{\text{}}-\left(p_{a,t}^{L}-c_{a,t}\right)S_{a}\right),\,0\leq a<A
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{0,t}=P_{t}^{\text{new}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{A,t}^{\text{}}=\left(p_{A,t}^{L}-c_{A,t}\right)S_{A}
+\]
+
+\end_inset
+
+Husholdning
+\begin_inset Formula 
+\[
+H_{t}=\mu_{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Z_{t}=\mu_{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{t}^{H}H_{t}+P_{t}^{Z}Z_{t}=Y_{t}^{H}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+Q_{a,t}=\gamma_{a}\left(\frac{p_{a,t}^{L}}{P_{t}^{H}}\right)^{-F}H_{t}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{t}^{H}H_{t}=\sum_{a=0}^{A}p_{a,t}^{L}Q_{a,t}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Subsection*
+Udenrigshandel
+\begin_inset Formula 
+\[
+X_{a,t}=\overline{X}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{X}}\right)^{-E_{X}}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+M_{a,t}=\overline{M}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
+\]
+
+\end_inset
+
+
+\end_layout
+
+\end_body
+\end_document
