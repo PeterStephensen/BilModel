@@ -10,18 +10,16 @@ Sets
   t1[t]     "Første endogene tidsperiode (Basisår)" 
   tT[t]     "Sidste tidsperiode T"
   txT[t]    "Undtagen sidste tidsperiode T"
-  txTT[t]   "Undtagen sidste og næstsidste tidsperiode T"
   tx0[t]    "Undtagen første tidsperiode"
   tx1[t]    "Undtagen første endogene tidsperiode"
   tx0T[t]   "Undtagen første og sidste tidsperiode"
-  tx1T[t]   "Undtagen første endogene og sidste tidsperiode"
   
-  a         "Bygningsaldre"                                 /0*25/
-  a0[a]     "Alder for nye bygninger"                       
-  ax0[a]    "Undtagen Alder for nye bygninger"                       
-  aA[a]     "Højeste bygningsalder A"                         
-  axA[a]    "Undtagen højeste bygningsalder A"
-  ax0A[a]   "Undtagen 0 og højeste bygningsalder A"
+  a         "Bils alder"                                 /0*25/
+  a0[a]     "Alder 0 (ny bil)"                       
+  ax0[a]    "Brugte biler"                       
+  aA[a]     "Højeste alder A"                         
+  axA[a]    "Undtagen højeste alder A"
+  ax0A[a]   "Undtagen 0 og højeste alder A"
 
   d_Q(a,t)        "Styrer E_Q. Bruges i kalibrering"
   d_Q_diff(a,t)   "Styrer E_Q_diff. Bruges i kalibrering"
@@ -31,11 +29,9 @@ t0(t)     = yes$(ord(t) = 1);
 t1(t)     = yes$(ord(t) = 2);
 tT(t)     = yes$(ord(t) = card(t));
 txT(t)    = yes$(ord(t) < card(t));
-txTT(t)   = yes$(ord(t) < card(t)-1);
 tx0(t)    = yes$(ord(t) > 1);
 tx1(t)    = yes$(ord(t) > 2);
 tx0T(t)   = yes$(ord(t) < card(t) and ord(t) > 1);
-tx1T(t)   = yes$(ord(t) < card(t) and ord(t) > 2);
 
 a0(a)     = yes$(ord(a) = 1);
 ax0(a)    = yes$(ord(a) > 1);
@@ -67,8 +63,8 @@ $Group ENDO
 $Group EXO 
     X_bar(a,t)    "Markedsstørrelse"
     M_bar(a,t)    "Markedsstørrelse"
-    PX_bar(a,t)   "Eksportpris"
-    PM_bar(a,t)   "Importpris"
+    PX_bar(a,t)   "Eksportkonkurrende pris"
+    PM_bar(a,t)   "Importkonkurrende pris"
 
     EX            "Eksportelasticitet"
     EM            "Importelasticitet"
@@ -173,7 +169,7 @@ EX.l          = 5;
 EM.l          = 2.5;
 
 #------------------------------
-# "DATA"
+# Data
 #------------------------------
 Y_H.l(t)    = 1;
 P.l(a,t)    = 1 - 0.98*ord(a)/card(a); # P(A)>0
@@ -181,8 +177,8 @@ Q.l('0',t)  = 0.1;
 M.l(a,t)    = 0.01*(1 - ord(a)/card(a));
 X.l(a,t)    = 0.01*(1 - ord(a)/card(a));
 
-# Skot-sandsynligheder
-s.l(a)     = 1 - exp(-5 + 0.17*ord(a));
+# Skrot-sandsynligheder
+s.l(a)     = 1 - exp(-5 + 0.17*ord(a));  # Gompertz lov (dør som mennesker)
 s.l('0')   = 1;
 S_tot.l(a) = prod(a2$(a2.val<=a.val), s.l(a2));
 
@@ -207,6 +203,8 @@ solve m_calib1 using CNS;
 
 RESET_Q_DOMAINS
 
+# Denne kalibrering er kun "halv-automatisk". Kalibreringen af p_L giver numeriske problemer. 
+# Derfor bliver resten af parametrene og variablene hånd-kalibreret 
 p_L.l(a,t)   = c.l(a,t) + (r.l(t)*P.l(a,t) + P.l(a,t) - P.l(a+1,t))/((1+r.l(t))*S_tot.l(a));
 H.l(t)       = sum(a, p_L.l(a,t)*Q.l(a,t));
 Z.l(t)       = Y_H.l(t) - H.l(t);

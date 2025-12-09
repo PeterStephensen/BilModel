@@ -1,0 +1,13 @@
+#Ignore file types 
+*.pyc
+*.lyx~
+*.gmy
+*.ipynb_checkpoints
+*.g00
+*.lst
+*.gsp
+*.pkl
+
+__pycache__/
+
+
