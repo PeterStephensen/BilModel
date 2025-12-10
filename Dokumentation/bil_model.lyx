@@ -168,7 +168,7 @@ På investeringstidspunktet
  
 \begin_inset Formula 
 \[
-P_{t}^{\text{new}}=\sum_{v=t}^{\infty}\left(p_{v-t,v}^{L}-c_{v-t,\tau}\right)S_{v-t}\frac{R_{v}}{R_{t}}
+P_{t}^{\text{new}}=\sum_{v=t}^{\infty}\left(p_{v-t,v}^{L}-c_{v-t,v}\right)S_{v-t}\frac{R_{v}}{R_{t}}
 \]
 
 \end_inset
