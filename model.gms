@@ -132,8 +132,11 @@ E_Q(a,t)$(d_Q(a,t))..                Q(a,t)     =E= J1(a,t) + s(a)*Q(a-1,t-1) + 
 
 E_Q_diff(a,t)$(d_Q_diff(a,t))..      Q(a,t)     =E= J2(a,t) + Q(a,t-1);
 
-E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J3(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
-E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J4(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+#E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J3(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+#E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J4(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
+
+E_P(a,t)$(axA(a) and tx0T(t))..       P(a+1,t+1) =E= J3(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t))) / s(a+1);
+E_PA(a,t)$(aA(a) and tx0T(t))..       0          =E= J4(a,t) + (P(a,t) - (p_L(a,t) - c(a,t)));
 
 E_Z(t)$(tx0(t))..                    Z(t)       =E= J5(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
 
@@ -205,7 +208,8 @@ RESET_Q_DOMAINS
 
 # Denne kalibrering er kun "halv-automatisk". Kalibreringen af p_L giver numeriske problemer. 
 # Derfor bliver resten af parametrene og variablene hånd-kalibreret 
-p_L.l(a,t)   = c.l(a,t) + (r.l(t)*P.l(a,t) + P.l(a,t) - P.l(a+1,t))/((1+r.l(t))*S_tot.l(a));
+*p_L.l(a,t)   = c.l(a,t) + (r.l(t)*P.l(a,t) + P.l(a,t) - P.l(a+1,t))/((1+r.l(t))*S_tot.l(a));
+p_L.l(a,t)   = c.l(a,t) + (r.l(t)*P.l(a,t) + (P.l(a,t) - P.l(a+1,t)) + (1 - s.l(a+1))*P.l(a+1,t)) / (1+r.l(t));
 H.l(t)       = sum(a, p_L.l(a,t)*Q.l(a,t));
 Z.l(t)       = Y_H.l(t) - H.l(t);
 muZ.l(t)     = Z.l(t)/Y_H.l(t);
@@ -262,12 +266,12 @@ execute_unload 'output\model0.gdx';
 #------------------------------
 # Stød
 #------------------------------
-# c.fx(a,t)$(t.val>0) = 1.01*c.l(a,t);
+c.fx(a,t)$(t.val>0) = 1.01*c.l(a,t);
 # P.fx('0', t)$(t.val>0) = 1.01*P.l('0', t);
 #Y_H_bar.fx(t)$(t.val>0) = 1.01*Y_H_bar.l(t);
 #Y_H_bar.fx(t)$(t.val>0) = 0.99*Y_H_bar.l(t);
 # X_bar.fx(a,t)$(t.val>0) = 1.01*X_bar.l(a,t);
-PX_bar.fx(a,t)$(t.val>0) = 1.01*PX_bar.l(a,t);
+#PX_bar.fx(a,t)$(t.val>0) = 1.01*PX_bar.l(a,t);
 
 #P.fx('0', t)$(t.val>5) = 1.01*P.l('0', t);
 # Y_H_bar.fx(t)$(t.val>5) = 1.01*Y_H_bar.l(t);
