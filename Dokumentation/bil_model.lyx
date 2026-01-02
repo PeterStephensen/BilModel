@@ -103,7 +103,7 @@ Bil-model med eksogen skrotning
 
 \begin_layout Author
 Peter Stephensen,
- DREAM 
+ DREAM
 \end_layout
 
 \begin_layout Section
@@ -111,7 +111,10 @@ Indledning
 \end_layout
 
 \begin_layout Standard
-Her opstilles en model med eksogen skrotning.....
+Her opstilles en model med eksogen skrotning.
+ I afsnit 2 forklares modellen.
+ I afsnit 3 opstilles det samlede lignings-system.
+ I afsnit 4 gives et bud på hvordan man kan kalibrere og forecaster modellen med samme metode som MAKRO anvender.
  
 \end_layout
 
@@ -120,10 +123,18 @@ Model
 \end_layout
 
 \begin_layout Standard
-Vi betragter mange ens leasing-firmaer.
+Vi betragter biler af forskellige typer 
+\begin_inset Formula $q$
+\end_inset
+
+ (f.eks.
+ el-,
+ benzin-,
+ dieselbil).
+ For hver type antager vi at der er mange ens leasing-firmaer.
  Bilerne er kapitalapparat i disse firmaer (og optræder derfor ikke i husholdningernes formue).
  Firmaerne lejer bilerne ud til husholdningerne til leasing-prisen 
-\begin_inset Formula $p_{a,t}^{L}$
+\begin_inset Formula $p_{q,a,t}^{L}$
 \end_inset
 
  hvor 
@@ -135,11 +146,8 @@ Vi betragter mange ens leasing-firmaer.
 \end_inset
 
  er tid.
-\end_layout
-
-\begin_layout Standard
-Et antal nye biler 
-\begin_inset Formula $Q_{0,t}$
+ Et antal nye biler 
+\begin_inset Formula $Q_{q,0,t}$
 \end_inset
 
  købes af leasing-firmaerne primo 
@@ -147,38 +155,62 @@ Et antal nye biler
 \end_inset
 
  til den eksogene nypris 
-\begin_inset Formula $P_{t}^{\text{new}}.$
+\begin_inset Formula $P_{q,t}^{\text{new}}.$
 \end_inset
 
- Bilernes alder er 0 år det første år forbrugerne får glæde af dem - dvs.
- i periode 
-\begin_inset Formula $t.$
-\end_inset
-
- Dette betyder at forbrugerne anvender bilerne med det sammen (der er ikke time-to-build).
  
 \end_layout
 
 \begin_layout Standard
-På investeringstidspunktet 
+Vi antager fuldkommen konkurrence mellem leasing-firmaerne,
+ således at ren profit konkurreres ned
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Man kunne relativt let antage imperfekt konkurrence a la Dixit-Stiglitz og derved indføre en markup.
+ Love-of-variety virker meget relevant for biler og forskellige makup'er for forskellige bil-typer kunne måske hjælpe i kaliberingen.
+\end_layout
+
+\end_inset
+
+.
+ På investeringstidspunktet 
 \begin_inset Formula $t$
 \end_inset
 
- skal det for hver bil gælde at:
+ skal det derfor for hver bil af type 
+\begin_inset Formula $q$
+\end_inset
+
+ gælde at:
  
 \begin_inset Formula 
 \[
-P_{t}^{\text{new}}=\sum_{v=t}^{\infty}\left(p_{v-t,v}^{L}-c_{v-t,v}\right)S_{v-t}\frac{R_{v}}{R_{t}}
+P_{q,t}^{\text{new}}=\sum_{v=t}^{\infty}\left(p_{q,v-t,v}^{L}-c_{q,v-t,v}\right)S_{q,v-t,v}\frac{R_{v}}{R_{t}}
 \]
 
 \end_inset
 
 hvor 
-\begin_inset Formula $c_{a,t}$
+\begin_inset Formula $c_{q,a,t}$
 \end_inset
 
- er løbende omkostninger og 
-\begin_inset Formula $S_{a}$
+ er løbende omkostninger
+\begin_inset Foot
+status collapsed
+
+\begin_layout Plain Layout
+Jeg tror brændelsomkostninger bør indgå her.
+ Brændselspriserne bør sætte sig i priserne på brugte biler,
+ jvf.
+ nedenfor.
+\end_layout
+
+\end_inset
+
+ og 
+\begin_inset Formula $S_{q,a,t}$
 \end_inset
 
  er andelen af en kohorte der stadig kører på vejene ved alder 
@@ -188,18 +220,18 @@ hvor
  Det gælder at
 \begin_inset Formula 
 \[
-S_{a}=\prod_{s=0}^{a}s_{a}
+S_{q,a,t}=\prod_{s=0}^{a}s_{q,s,t-s}
 \]
 
 \end_inset
 
 hvor 
-\begin_inset Formula $s_{a}$
+\begin_inset Formula $s_{q,a,t}$
 \end_inset
 
  er den eksogene overlevelsessandsynlighed.
  Vi antager at 
-\begin_inset Formula $S_{0}=1$
+\begin_inset Formula $S_{q,0,t}=1$
 \end_inset
 
  og at der findes 
@@ -207,7 +239,7 @@ hvor
 \end_inset
 
  således at 
-\begin_inset Formula $S_{a}=0$
+\begin_inset Formula $S_{q,a,t}=0$
 \end_inset
 
  for 
@@ -233,20 +265,21 @@ R_{t}=\prod_{v=0}^{t}\frac{1}{1+r_{v}}
 Bestanden af biler følger ligningen:
 \begin_inset Formula 
 \[
-Q_{a,t}=s_{a}Q_{a-1,t-1}+M_{a,t}-X_{a,t}
+Q_{q,a,t}=s_{q,a,t}Q_{q,a-1,t-1}+M_{q,a,t}-X_{q,a,t}
 \]
 
 \end_inset
 
 hvor 
-\begin_inset Formula $M_{a,t}$
+\begin_inset Formula $M_{q,a,t}$
 \end_inset
 
  er import af brugte biler og 
-\begin_inset Formula $X_{a,t}$
+\begin_inset Formula $X_{q,a,t}$
 \end_inset
 
- er eksport af brugte biler (beskrives nedenfor).
+ er eksport af brugte biler.
+ 
 \end_layout
 
 \begin_layout Standard
@@ -257,73 +290,25 @@ Værdien af en bil for leasing-firmaet (ny eller brugt) er primo periode
  givet ved:
 \begin_inset Formula 
 \begin{equation}
-P_{a,t}^{\text{}}=\sum_{v=t}^{\infty}\left(p_{a+v-t,v}^{L}-c_{a+v-t,v}\right)S_{a+v-t}\frac{R_{v}}{R_{t}}\label{eq:P}
+P_{q,a,t}^{\text{}}=\sum_{v=t}^{\infty}\left(p_{q,a+v-t,v}^{L}-c_{q,a+v-t,v}\right)\frac{S_{q,a+v-t,v}}{S_{q,a,t}}\frac{R_{v}}{R_{t}}\label{eq:P}
 \end{equation}
 
 \end_inset
 
-Man kan tænke på 
-\begin_inset Formula $P_{a,t}$
-\end_inset
-
- som prisen på et brugtbilsmarked mellem leasing-firmaerne.
- Da alle firmaerne er ens vil der ikke være handel i symmetrisk ligevægt.
- 
-\end_layout
-
-\begin_layout Standard
-Ligningen (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:P"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-) er ikke påvirket af import fordi det antages at en bil købt i udlandet koster det samme som den indenlandske (dette argumenteres der for nedenfor);
- - dvs.
- 
-\begin_inset Formula $P_{a,t}.$
-\end_inset
-
- På samme måde er (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:P"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-) ikke påvirket af eksport fordi det antages at biler solgt på eksportmarkedet koster det samme som på hjemmemarkedet (der er ikke pricing-to-marked).
-\end_layout
-
-\begin_layout Standard
-Det fremgår af (
-\begin_inset CommandInset ref
-LatexCommand ref
-reference "eq:P"
-plural "false"
-caps "false"
-noprefix "false"
-nolink "false"
-
-\end_inset
-
-) at
+Det fremgår at
 \begin_inset Formula 
 \[
-P_{0,t}=P_{t}^{\text{new}}
+P_{q,0,t}=P_{q,t}^{\text{new}}
 \]
 
 \end_inset
 
+Man kan tænke på 
+\begin_inset Formula $P_{q,a,t}$
+\end_inset
 
+ som prisen på et brugtbilsmarked mellem leasing-firmaerne.
+ Da alle firmaerne er ens vil der ikke være handel i symmetrisk ligevægt.
 \end_layout
 
 \begin_layout Standard
@@ -341,20 +326,20 @@ nolink "false"
 ) kan det vises at:
 \begin_inset Formula 
 \begin{equation}
-P_{a+1,t+1}^{\text{}}=\left(1+r_{t+1}\right)\left(P_{a,t}^{\text{}}-\left(p_{a,t}^{L}-c_{a,t}\right)S_{a}\right)\label{eq:P_diff}
+P_{q,a+1,t+1}^{\text{}}=\frac{1+r_{t+1}}{s_{q,a+1,t+1}}\left(P_{q,a,t}^{\text{}}-\left(p_{q,a,t}^{L}-c_{q,a,t}\right)\right)\label{eq:P_diff}
 \end{equation}
 
 \end_inset
 
 Dette kan også skrives som
 \begin_inset Formula 
-\[
-p_{a,t}^{L}=c_{a,t}+\frac{r_{t+1}P_{a,t}^{\text{}}+\left(P_{a,t}^{\text{}}-P_{a+1,t+1}^{\text{}}\right)}{\left(1+r_{t+1}\right)S_{a}}
-\]
+\begin{equation}
+p_{q,a,t}^{L}=c_{q,a,t}+\frac{r_{t+1}P_{q,a,t}^{\text{}}+\left(P_{q,a,t}^{\text{}}-P_{q,a+1,t+1}^{\text{}}\right)+\left(1-s_{q,a+1,t+1}\right)P_{q,a+1,t+1}^{\text{}}}{1+r_{t+1}}\label{eq:pL}
+\end{equation}
 
 \end_inset
 
-således at leasing-prisen er et klassisk user-cost-koncept.
+således at leasing-prisen er et klassisk user-cost-koncept (løbende omkostninger + renter + værditab + tab ved skrotning).
  
 \end_layout
 
@@ -371,11 +356,11 @@ nolink "false"
 \end_inset
 
 ) at 
-\begin_inset Formula $P_{A+1,t}=0$
+\begin_inset Formula $P_{q,A+1,t}=0$
 \end_inset
 
  idet 
-\begin_inset Formula $S_{a}=0$
+\begin_inset Formula $S_{q,a}=0$
 \end_inset
 
  for 
@@ -396,7 +381,7 @@ nolink "false"
 ) har vi da at:
 \begin_inset Formula 
 \[
-P_{A,t}^{\text{}}=\left(p_{A,t}^{L}-c_{A,t}\right)S_{A}
+P_{q,A,t}^{\text{}}=p_{q,A,t}^{L}-c_{q,A,t}
 \]
 
 \end_inset
@@ -416,7 +401,7 @@ Husholdningerne efterspørger et aggregat af biler
 
 \begin_inset Formula 
 \[
-H_{t}=\mu_{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+H_{t}=\mu_{t}^{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
 \]
 
 \end_inset
@@ -424,7 +409,7 @@ H_{t}=\mu_{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}
 
 \begin_inset Formula 
 \[
-Z_{t}=\mu_{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
+Z_{t}=\mu_{t}^{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
 \]
 
 \end_inset
@@ -442,10 +427,18 @@ hvor
 \end_inset
 
  er husholdningernes løbende indkomst (vi ser bort fra formue i dette simple eksempel).
- Efterspørgslen efter biler er givet ved:
+ 
+\end_layout
+
+\begin_layout Standard
+Den aggregerede efterspørgsl efter biler af type 
+\begin_inset Formula $q$
+\end_inset
+
+ er givet ved:
 \begin_inset Formula 
 \[
-Q_{a,t}=\gamma_{a}\left(\frac{p_{a,t}^{L}}{P_{t}^{H}}\right)^{-F}H_{t}
+D_{q,t}=\gamma_{q,t}^{D}\left(\frac{P_{q,t}^{D}}{P_{t}^{H}}\right)^{-F_{H}}H_{t}
 \]
 
 \end_inset
@@ -453,13 +446,40 @@ Q_{a,t}=\gamma_{a}\left(\frac{p_{a,t}^{L}}{P_{t}^{H}}\right)^{-F}H_{t}
 
 \begin_inset Formula 
 \[
-P_{t}^{H}H_{t}=\sum_{a=0}^{A}p_{a,t}^{L}Q_{a,t}
+P_{t}^{H}H_{t}=\sum_{q}P_{q,t}^{D}D_{q,t}
+\]
+
+\end_inset
+
+Efterspørgslen efter en bil af alder 
+\begin_inset Formula $a$
+\end_inset
+
+ er givet ved
+\end_layout
+
+\begin_layout Standard
+\begin_inset Formula 
+\[
+Q_{q,a,t}=\gamma_{q,a,t}^{Q}\left(\frac{p_{q,a,t}^{L}}{P_{q,t}^{D}}\right)^{-F_{D}}D_{q,t}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+P_{q,t}^{D}D_{q,t}=\sum_{a=0}^{A}p_{q,a,t}^{L}Q_{q,a,t}
 \]
 
 \end_inset
 
 En faldende fordelingsparameter 
-\begin_inset Formula $\gamma_{a}$
+\begin_inset Formula $\gamma_{q,a,t}^{Q}$
+\end_inset
+
+ i 
+\begin_inset Formula $a$
 \end_inset
 
  modellerer at husholdningerne foretrækker nye biler.
@@ -469,17 +489,17 @@ En faldende fordelingsparameter
 Vi antager at udenlandske leasing-firmaer efterspørger indenlandske biler i følge Armington-funktionen:
 \begin_inset Formula 
 \[
-X_{a,t}=\overline{X}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{X}}\right)^{-E_{X}}
+X_{q,a,t}=\overline{X}_{q,a,t}\left(\frac{P_{q,a,t}}{\overline{P}_{q,a,t}^{X}}\right)^{-E_{X}}
 \]
 
 \end_inset
 
 hvor 
-\begin_inset Formula $\overline{P}_{a,t}^{X}$
+\begin_inset Formula $\overline{P}_{q,a,t}^{X}$
 \end_inset
 
  er det gennemsnitlige prisniveau på eksportmarkederne og 
-\begin_inset Formula $\overline{X}_{a,t}$
+\begin_inset Formula $\overline{X}_{q,a,t}$
 \end_inset
 
  er en proxy for markedsstørrelse.
@@ -487,40 +507,40 @@ hvor
 
 \begin_layout Standard
 Hvis de indenlandske leasing-firmaer importerer brugte biler antager vi at prisen 
-\begin_inset Formula $P_{a,t}^{M}$
+\begin_inset Formula $P_{q,a,t}^{M}$
 \end_inset
 
  er voksende i antallet af importerede biler:
 \begin_inset Formula 
 \[
-P_{a,t}^{M}=\overline{P}_{a,t}^{M}\left(\frac{M_{a,t}}{\overline{M}_{a,t}}\right)^{\beta_{M}}
+P_{q,a,t}^{M}=\overline{P}_{q,a,t}^{M}\left(\frac{M_{q,a,t}}{\overline{M}_{q,a,t}}\right)^{\beta_{M}}
 \]
 
 \end_inset
 
 hvor 
-\begin_inset Formula $\overline{P}_{a,t}^{M}$
+\begin_inset Formula $\overline{P}_{q,a,t}^{M}$
 \end_inset
 
  er det gennemsnitlige prisniveau på importmarkederne og 
-\begin_inset Formula $\overline{M}_{a,t}$
+\begin_inset Formula $\overline{M}_{q,a,t}$
 \end_inset
 
  er en proxy for markedsstørrelse.
  Dette kan ses som et resultat af søgeadfærd.
  Så længe 
-\begin_inset Formula $P_{a,t}^{M}<P_{a,t}$
+\begin_inset Formula $P_{q,a,t}^{M}<P_{q,a,t}$
 \end_inset
 
  kan det betale sig at importere flere biler.
  Vi antager derfor at der importeres så meget at 
-\begin_inset Formula $P_{a,t}^{M}=P_{a,t},$
+\begin_inset Formula $P_{q,a,t}^{M}=P_{q,a,t},$
 \end_inset
 
  eller
 \begin_inset Formula 
 \[
-M_{a,t}=\overline{M}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
+M_{q,a,t}=\overline{M}_{q,a,t}\left(\frac{P_{q,a,t}}{\overline{P}_{q,a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
 \]
 
 \end_inset
@@ -545,75 +565,98 @@ Antag at modellen er defineret for
 Leasing-firma
 \end_layout
 
+\begin_layout Standard
+\begin_inset Formula 
+\begin{equation}
+Q_{q,a,t}=s_{q,a}Q_{q,a-1,t-1}+M_{q,a,t}-X_{q,a,t},\,0<a\leq A\label{eq:L1}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+P_{q,a+1,t+1}^{\text{}}=\frac{1+r_{t+1}}{s_{q,a+1,t+1}}\left(P_{q,a,t}^{\text{}}-\left(p_{q,a,t}^{L}-c_{q,a,t}\right)\right),\,0\leq a<A\label{eq:L2}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+P_{q,0,t}=P_{q,t}^{\text{new}}\label{eq:L3}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+P_{q,A,t}^{\text{}}=p_{q,A,t}^{L}-c_{q,A,t}\label{eq:L4}
+\end{equation}
+
+\end_inset
+
+
+\end_layout
+
 \begin_layout Subsection*
-\begin_inset Formula 
-\[
-Q_{a,t}=s_{a}Q_{a-1,t-1}+M_{a,t}-X_{a,t},\,0<a\leq A
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-P_{a+1,t+1}^{\text{}}=\left(1+r_{t+1}\right)\left(P_{a,t}^{\text{}}-\left(p_{a,t}^{L}-c_{a,t}\right)S_{a}\right),\,0\leq a<A
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-P_{0,t}=P_{t}^{\text{new}}
-\]
-
-\end_inset
-
-
-\begin_inset Formula 
-\[
-P_{A,t}^{\text{}}=\left(p_{A,t}^{L}-c_{A,t}\right)S_{A}
-\]
-
-\end_inset
-
 Husholdning
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
-\[
-H_{t}=\mu_{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
-\]
+\begin{equation}
+H_{t}=\mu_{t}^{H}\left(\frac{P_{t}^{H}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}\label{eq:H1}
+\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula 
-\[
-Z_{t}=\mu_{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}
-\]
+\begin{equation}
+Z_{t}=\mu_{t}^{Z}\left(\frac{P_{t}^{Z}}{P_{t}^{C}}\right)^{-E}\frac{Y_{t}^{H}}{P_{t}^{C}}\label{eq:H2}
+\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula 
-\[
-P_{t}^{H}H_{t}+P_{t}^{Z}Z_{t}=Y_{t}^{H}
-\]
+\begin{equation}
+P_{t}^{H}H_{t}+P_{t}^{Z}Z_{t}=Y_{t}^{H}\label{eq:H3}
+\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula 
-\[
-Q_{a,t}=\gamma_{a}\left(\frac{p_{a,t}^{L}}{P_{t}^{H}}\right)^{-F}H_{t}
-\]
+\begin{equation}
+D_{q,t}=\gamma_{q,t}^{D}\left(\frac{P_{q,t}^{D}}{P_{t}^{H}}\right)^{-F_{H}}H_{t}\label{eq:H4}
+\end{equation}
 
 \end_inset
 
 
 \begin_inset Formula 
-\[
-P_{t}^{H}H_{t}=\sum_{a=0}^{A}p_{a,t}^{L}Q_{a,t}
-\]
+\begin{equation}
+P_{t}^{H}H_{t}=\sum_{q}P_{q,t}^{D}D_{q,t}\label{eq:H5}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+Q_{q,a,t}=\gamma_{q,a,t}^{Q}\left(\frac{p_{q,a,t}^{L}}{P_{q,t}^{D}}\right)^{-F_{D}}D_{q,t}\label{eq:H6}
+\end{equation}
+
+\end_inset
+
+
+\begin_inset Formula 
+\begin{equation}
+P_{q,t}^{D}D_{q,t}=\sum_{a=0}^{A}p_{q,a,t}^{L}Q_{q,a,t}\label{eq:H7}
+\end{equation}
 
 \end_inset
 
@@ -622,9 +665,12 @@ P_{t}^{H}H_{t}=\sum_{a=0}^{A}p_{a,t}^{L}Q_{a,t}
 
 \begin_layout Subsection*
 Udenrigshandel
+\end_layout
+
+\begin_layout Standard
 \begin_inset Formula 
 \[
-X_{a,t}=\overline{X}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{X}}\right)^{-E_{X}}
+X_{q,a,t}=\overline{X}_{q,a,t}\left(\frac{P_{q,a,t}}{\overline{P}_{q,a,t}^{X}}\right)^{-E_{X}}
 \]
 
 \end_inset
@@ -632,12 +678,265 @@ X_{a,t}=\overline{X}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{X}}\right)^{-
 
 \begin_inset Formula 
 \[
-M_{a,t}=\overline{M}_{a,t}\left(\frac{P_{a,t}}{\overline{P}_{a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
+M_{q,a,t}=\overline{M}_{q,a,t}\left(\frac{P_{q,a,t}}{\overline{P}_{q,a,t}^{M}}\right)^{\frac{1}{\beta_{M}}}
 \]
 
 \end_inset
 
 
+\end_layout
+
+\begin_layout Section
+Kalibrering og forecasting
+\end_layout
+
+\begin_layout Standard
+Vi skal have data for 
+\begin_inset Formula $\left(Y_{t}^{H},P_{t}^{Z},Z_{t}\right)$
+\end_inset
+
+ på top-niveau og 
+\begin_inset Formula $\left(c_{q,a,t},P_{q,a,t}^{\text{}},Q_{q,a,t},M_{q,a,t},X_{q,a,t},r_{t}\right)$
+\end_inset
+
+ nederst i nestet.
+ Som nævnt ovenfor tror jeg kun det giver mening hvis 
+\begin_inset Formula $c_{q,a,t}$
+\end_inset
+
+ indeholder brændselsomkostninger (og det tror jeg ikke det gør i den nuværende model - hvilket måske forklarer at det er lidt svært at få modellen til at give mening).
+ 
+\begin_inset Formula $P_{q,0,t}^{\text{}}$
+\end_inset
+
+ er ny-pris og 
+\begin_inset Formula $P_{q,a,t}^{\text{}},\,a>0,$
+\end_inset
+
+ priser på brugte biler.
+ Antag vi har data for 
+\begin_inset Formula $t=1,..,T$
+\end_inset
+
+,
+ bil-typer 
+\begin_inset Formula $q=1,..,Q$
+\end_inset
+
+ og aldre 
+\begin_inset Formula $a=0,..,A.$
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+Ud fra (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:L1"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) kan vi beregne 
+\begin_inset Formula $s_{q,a,t}$
+\end_inset
+
+ og derfor 
+\begin_inset Formula $S_{q,a,t}.$
+\end_inset
+
+ Derefter kan vi beregne user-cost 
+\begin_inset Formula $p_{q,a,t}^{L}$
+\end_inset
+
+ ud fra (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:L2"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:L4"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Jeg vil foreslå vi kalibrerer efterspørgselssystemet (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H1"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+)-(
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H7"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) på samme måde som MAKRO.
+ Historisk beregner vi 
+\begin_inset Formula $P_{q,t}^{D},$
+\end_inset
+
+ 
+\begin_inset Formula $P_{t}^{H}$
+\end_inset
+
+ og 
+\begin_inset Formula $P_{t}^{C}$
+\end_inset
+
+ som kædeprisindeks og 
+\begin_inset Formula $D_{q,t}$
+\end_inset
+
+ og 
+\begin_inset Formula $H_{t}$
+\end_inset
+
+ som tilsvarende kædemængdeindeks.
+ Herefter er det lige ud af landevejen at kalibrere 
+\begin_inset Formula $\mu_{t}^{H},$
+\end_inset
+
+ 
+\begin_inset Formula $\mu_{t}^{Z},$
+\end_inset
+
+ 
+\begin_inset Formula $\gamma_{q,t}^{D}$
+\end_inset
+
+ og 
+\begin_inset Formula $\gamma_{q,a,t}^{Q}$
+\end_inset
+
+ ud fra (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H1"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+),
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H2"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+),
+ (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H4"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+) og (
+\begin_inset CommandInset ref
+LatexCommand ref
+reference "eq:H6"
+plural "false"
+caps "false"
+noprefix "false"
+nolink "false"
+
+\end_inset
+
+).
+\end_layout
+
+\begin_layout Standard
+Hvis vi har data for 10 eller flere år bliver det muligt at analysere og forecaste parametrene.
+ Man kunne f.eks teste om man historisk kan antage seperabilitet:
+\begin_inset Formula 
+\[
+\mu_{t}^{H}=\mu^{H}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\mu_{t}^{Z}=\mu^{Z}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\gamma_{q,t}^{D}=\gamma_{q,t}^{D}
+\]
+
+\end_inset
+
+
+\begin_inset Formula 
+\[
+\gamma_{q,a,t}^{Q}=\gamma_{q,a}^{Q}
+\]
+
+\end_inset
+
+Parameteren 
+\begin_inset Formula $\gamma_{q,t}^{D}$
+\end_inset
+
+ ville da stå for ind-/udfasningen af biltyper mens 
+\begin_inset Formula $\gamma_{q,a}^{Q}$
+\end_inset
+
+ ville stå for aldersstrukturen når en type er faset helt ind.
+ Forecasting af 
+\begin_inset Formula $\gamma_{q,t}^{D}$
+\end_inset
+
+ vil spille en central rolle i fremskrivningen af el-biler.
 \end_layout
 
 \end_body
