@@ -77,7 +77,7 @@ $Group EXO
 
 
     s(a)          "Overlevelsessandsynlighed"
-    S_tot(a)      "Store-S"
+#    S_tot(a)      "Store-S"
 
     E             "Substitutionselasticitet"
     F             "Substitutionselasticitet"
@@ -103,11 +103,11 @@ $Group EXO
     M_sum(t)      "Samlet import af biler"
     X_sum(t)      "Samlet eksport af biler"
     p_L0(t)       "Leasing-pris på ny bil"
-    p_L1(t)       "Leasing-pris på ny bil"
-    p_L2(t)       "Leasing-pris på ny bil"
+    p_L1(t)       "Leasing-pris på 1 år gammel bil"
+    p_L2(t)       "Leasing-pris på 2 år gammel bil"
     p_L10(t)      "Leasing-pris på 10 år gammel bil"
-    p_L24(t)      "Leasing-pris på 10 år gammel bil"
-    p_L25(t)      "Leasing-pris på 10 år gammel bil"
+    p_L24(t)      "Leasing-pris på 24 år gammel bil"
+    p_L25(t)      "Leasing-pris på 25 år gammel bil"
 ;
 
 $Group J_led
@@ -132,10 +132,8 @@ E_Q(a,t)$(d_Q(a,t))..                Q(a,t)     =E= J1(a,t) + s(a)*Q(a-1,t-1) + 
 
 E_Q_diff(a,t)$(d_Q_diff(a,t))..      Q(a,t)     =E= J2(a,t) + Q(a,t-1);
 
-#E_P(a,t)$(axA(a) and tx0T(t))..      P(a+1,t+1) =E= J3(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
-#E_PA(a,t)$(aA(a) and tx0T(t))..      0          =E= J4(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t)) * S_tot(a));
-
 E_P(a,t)$(axA(a) and tx0T(t))..       P(a+1,t+1) =E= J3(a,t) + (1+r(t+1))*(P(a,t) - (p_L(a,t) - c(a,t))) / s(a+1);
+
 E_PA(a,t)$(aA(a) and tx0T(t))..       0          =E= J4(a,t) + (P(a,t) - (p_L(a,t) - c(a,t)));
 
 E_Z(t)$(tx0(t))..                    Z(t)       =E= J5(t) + muZ(t)*(PZ(t)/PC(t))**(-E)*Y_H(t)/PC(t);
@@ -183,7 +181,7 @@ X.l(a,t)    = 0.01*(1 - ord(a)/card(a));
 # Skrot-sandsynligheder
 s.l(a)     = 1 - exp(-5 + 0.17*ord(a));  # Gompertz lov (dør som mennesker)
 s.l('0')   = 1;
-S_tot.l(a) = prod(a2$(a2.val<=a.val), s.l(a2));
+#S_tot.l(a) = prod(a2$(a2.val<=a.val), s.l(a2));
 
 # Initialisering af priser
 PH.l(t) = 1;
